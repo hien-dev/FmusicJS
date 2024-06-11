@@ -6,15 +6,14 @@ import {
 } from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import HomeScreen from 'screens/Home';
-import AlbumScreen from 'screens/Albums';
-import SettingScreen from 'screens/Setting';
-import HistoryScreen from 'screens/History';
+import Home from 'screens/Home';
+import Albums from 'screens/Albums';
+import Setting from 'screens/Setting';
+import History from 'screens/History';
 import ImageIcons from 'components/ImageIcons';
 import Assets from 'assets/images';
-import {DarkTheme} from 'themes/dark';
-import {LightTheme} from 'themes/light';
-import {useTheme} from 'themes/index';
+import {useTheme, LightTheme, DarkTheme} from 'themes/index';
+import {SCREEN_NAME} from 'constants/ScreenNames';
 
 const AppBottomTabs = () => {
   const Tab = createBottomTabNavigator();
@@ -25,32 +24,32 @@ const AppBottomTabs = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName="HomeScreen"
+      initialRouteName={SCREEN_NAME.HOME}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: theme.primaryColors.white,
-        tabBarStyle: {backgroundColor: theme.primaryColors.black},
+        tabBarActiveTintColor: theme.colors.text,
+        tabBarStyle: {backgroundColor: theme.colors.background},
       }}>
       <Tab.Screen
-        name="HomeScreen"
-        component={HomeScreen}
+        name={SCREEN_NAME.HOME}
+        component={Home}
         options={{
           tabBarIcon: ({color}) =>
             tabBarIcon({icon: Assets.home, color: color}),
         }}
       />
       <Tab.Screen
-        name="HistoryScreen"
-        component={HistoryScreen}
+        name={SCREEN_NAME.HISTORY}
+        component={History}
         options={{
           tabBarIcon: ({color}) =>
             tabBarIcon({icon: Assets.timePast, color: color}),
         }}
       />
       <Tab.Screen
-        name="SettingScreen"
-        component={SettingScreen}
+        name={SCREEN_NAME.SETTING}
+        component={Setting}
         options={{
           tabBarIcon: ({color}) =>
             tabBarIcon({icon: Assets.menu, color: color}),
@@ -67,7 +66,7 @@ const AppStack = () => {
       initialRouteName="BottomTabs"
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="BottomTabs" component={AppBottomTabs} />
-      <Stack.Screen name="AlbumScreen" component={AlbumScreen} />
+      <Stack.Screen name={SCREEN_NAME.ALBUMS} component={Albums} />
     </Stack.Navigator>
   );
 };

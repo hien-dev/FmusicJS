@@ -1,0 +1,6 @@
+export const SCREEN_NAME = {
+  HOME: 'HOME',
+  ALBUMS: 'ALBUMS',
+  HISTORY: 'HISTORY',
+  SETTING: 'SETTING',
+};
