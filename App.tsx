@@ -5,11 +5,17 @@
  * @format
  */
 
+import AppNavigator from 'navigation/AppNavigator';
 import React from 'react';
-import Home from 'screens/Home';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import appStyles from 'themes/appStyles';
 
 const App = () => {
-  return <Home />;
+  return (
+    <GestureHandlerRootView style={appStyles.flex}>
+      <AppNavigator />
+    </GestureHandlerRootView>
+  );
 };
 
 export default App;
