@@ -1,56 +1,73 @@
 import axios from 'axios';
+import ytdl from '@ytdl-core';
 import RequestBody from './requests/RequestBody';
-import {searchResponse} from './responses/SearchResponse';
+import {searchResponse, parseSearchResponse} from './responses/SearchResponse';
 
 export default class API {
   static RequestBody = RequestBody;
   static URL = class URL {
-    static Main = 'https://www.youtube.com';
+    static Main = 'https://www.youtube.com/';
     static #Gapis = 'https://youtubei.googleapis.com';
+    static #Endpoint = 'youtubei/v1/';
+    static #Key = '?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
+    static #PrettyPrint = '&prettyPrint=false';
 
-    static #Endpoint = '/youtubei/v1/';
-    static #Parameter =
-      '?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8&prettyPrint=false';
-
+    static #SwJS = 'sw.js_data';
     static #Search = 'search';
     static #Suggestion = 'get_search_suggestions';
     static #Browse = 'browse';
     static #Next = 'next';
     static #Audio = 'player';
 
-    static SwJSdata = this.Main + '/sw.js_data';
-    static Search = this.Main + this.#Endpoint + this.#Search + this.#Parameter;
-    static Suggestion =
-      this.Main + this.#Endpoint + this.#Suggestion + this.#Parameter;
-    static Browse = this.Main + this.#Endpoint + this.#Browse + this.#Parameter;
-    static Next = this.Main + this.#Endpoint + this.#Next + this.#Parameter;
-    static Audio = this.Main + this.#Endpoint + this.#Audio + this.#Parameter;
-    static Stream =
-      this.#Gapis + this.#Endpoint + this.#Audio + this.#Parameter;
+    static SwJSdata = this.Main + this.#SwJS;
+    static Search =
+      this.Main + this.#Endpoint + this.#Search + this.#Key + this.#PrettyPrint;
+    // static Suggestion =
+    //   this.Main + this.#Endpoint + this.#Suggestion + this.#Parameter;
+    // static Browse = this.Main + this.#Endpoint + this.#Browse + this.#Parameter;
+    // static Next = this.Main + this.#Endpoint + this.#Next + this.#Key;
+    static Audio =
+      this.Main + this.#Endpoint + this.#Audio + this.#Key + this.#PrettyPrint;
+    static Stream = this.#Gapis + this.#Endpoint + this.#Audio + this.#Key;
   };
 
   static initRequestHeader;
-  static initialize() {
-    axios
-      .get(this.URL.SwJSdata)
-      .then(res => {
-        this.initRequestHeader = res.headers;
-      })
-      .catch(error => {
-        console.log(JSON.stringify(error));
-      });
+  static async initialize() {
+    let res = await axios.get(this.URL.SwJSdata);
+    if (res.headers) {
+      this.initRequestHeader = res.headers;
+    }
+    return true;
   }
 
   /**
-   * @returns {searchResponse}
+   * @returns {parseSearchResponse}
    */
-  static async getSearchResults(query = 'remix tiktok') {
-    const body = API.RequestBody.DEFAULT;
+  static async getSearchResults(query = 'co chan nhan') {
+    let body = API.RequestBody.DEFAULT;
     body.query = query;
     let headers = this.initRequestHeader || {};
     let response = await axios.post(this.URL.Search, body, {
       headers: JSON.parse(JSON.stringify(headers)),
     });
-    console.log(JSON.stringify(response.data));
+    return parseSearchResponse(response);
+  }
+
+  static async getStream(videoId) {
+    // let body = API.RequestBody.DEFAULT;
+    // if (body.query) {
+    //   delete body.query;
+    // }
+    // body.videoId = videoId;
+    // let headers = this.initRequestHeader || {};
+    // let response = await axios.post(this.URL.Audio, body, {
+    //   headers: JSON.parse(JSON.stringify(headers)),
+    // });
+    // console.log(JSON.stringify(response.data));
+    // return response;
+    let response = await ytdl.getInfo(
+      `https://www.youtube.com/watch?v=${videoId}`,
+    );
+    console.log(JSON.stringify(response));
   }
 }
