@@ -10,6 +10,7 @@
       "constants/*": ["src/constants/*"],
       "navigation/*": ["src/navigation/*"],
       "networkings/*": ["src/networkings/*"],
+      "stores/*": ["src/stores/*"],
       "screens/*": ["src/screens/*"],
       "themes/*": ["src/themes/*"],
       "utils/*": ["src/utils/*"],

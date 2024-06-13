@@ -12,6 +12,7 @@ import SplashScreen from 'react-native-splash-screen';
 import appStyles from 'themes/appStyles';
 import AppNavigator from 'navigation/AppNavigator';
 import API from 'networkings/api';
+import StreamBotomSheet from 'components/BottomSheet';
 
 const queryClient = new QueryClient();
 const App = () => {
@@ -28,6 +29,7 @@ const App = () => {
     <GestureHandlerRootView style={appStyles.flex}>
       <QueryClientProvider client={queryClient}>
         <AppNavigator />
+        <StreamBotomSheet />
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

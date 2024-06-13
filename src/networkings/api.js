@@ -26,9 +26,6 @@ export default class API {
     //   this.Main + this.#Endpoint + this.#Suggestion + this.#Parameter;
     // static Browse = this.Main + this.#Endpoint + this.#Browse + this.#Parameter;
     // static Next = this.Main + this.#Endpoint + this.#Next + this.#Key;
-    static Audio =
-      this.Main + this.#Endpoint + this.#Audio + this.#Key + this.#PrettyPrint;
-    static Stream = this.#Gapis + this.#Endpoint + this.#Audio + this.#Key;
   };
 
   static initRequestHeader;
@@ -43,7 +40,7 @@ export default class API {
   /**
    * @returns {parseSearchResponse}
    */
-  static async getSearchResults(query = 'co chan nhan') {
+  static async getSearchResults(query = 'tiktok remix') {
     let body = API.RequestBody.DEFAULT;
     body.query = query;
     let headers = this.initRequestHeader || {};
@@ -54,20 +51,7 @@ export default class API {
   }
 
   static async getStream(videoId) {
-    // let body = API.RequestBody.DEFAULT;
-    // if (body.query) {
-    //   delete body.query;
-    // }
-    // body.videoId = videoId;
-    // let headers = this.initRequestHeader || {};
-    // let response = await axios.post(this.URL.Audio, body, {
-    //   headers: JSON.parse(JSON.stringify(headers)),
-    // });
-    // console.log(JSON.stringify(response.data));
-    // return response;
-    let response = await ytdl.getInfo(
-      `https://www.youtube.com/watch?v=${videoId}`,
-    );
-    console.log(JSON.stringify(response));
+    let url = `${this.URL.Main}watch?v=${videoId}`;
+    return await ytdl.getInfo(url);
   }
 }

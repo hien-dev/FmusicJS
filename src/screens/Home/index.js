@@ -1,15 +1,20 @@
 import React, {useMemo} from 'react';
 import {StyleSheet, View, FlatList} from 'react-native';
-import {useQuery} from '@tanstack/react-query';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import Text from 'components/Text';
 import API from 'networkings/api';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
 import ListRenderer from './listRenderer';
+import {useVideoStore} from 'stores/videoStore';
+import LoadingView from 'components/LoadingView';
 
 const Home = () => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const {setVideo} = useVideoStore();
+
   const {data} = useQuery({
     queryKey: ['Home-List'],
     queryFn: () => API.getSearchResults(),
@@ -19,11 +24,20 @@ const Home = () => {
     return Array.from({length: 15}).map(_ => null);
   }, []);
 
+  const mutationGetStream = useMutation({
+    mutationFn: videoId => API.getStream(videoId),
+    onSuccess: res => {
+      setVideo(res);
+    },
+  });
+
   return (
-    <SafeAreaView style={styles.container}>
-      <Text bold fontSize={appStyles.md} color={theme.colors.text}>
-        Fmusic
-      </Text>
+    <View style={[styles.container, {paddingTop: insets.top}]}>
+      <View style={styles.height40}>
+        <Text bold fontSize={appStyles.md} color={theme.colors.text}>
+          Fmusic
+        </Text>
+      </View>
       <FlatList
         showsVerticalScrollIndicator={false}
         data={data ?? dataPlaceholderList}
@@ -33,13 +47,14 @@ const Home = () => {
             item={item}
             index={index}
             onPress={value => {
-              API.getStream(value.videoId);
+              mutationGetStream.mutate(value.videoId);
             }}
           />
         )}
-        ListFooterComponent={<View style={appStyles.listFooter} />}
+        ListFooterComponent={<View style={styles.listFooter} />}
       />
-    </SafeAreaView>
+      {mutationGetStream.isPending && <LoadingView />}
+    </View>
   );
 };
 
@@ -48,9 +63,12 @@ const styles = StyleSheet.create({
     ...appStyles.flex,
     ...appStyles.pHSm,
   },
+  height40: {
+    height: 40,
+  },
   listFooter: {
     ...appStyles.fullWidth,
-    height: 200,
+    height: 100,
   },
 });
 

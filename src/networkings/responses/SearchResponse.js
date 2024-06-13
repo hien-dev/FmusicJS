@@ -17493,7 +17493,7 @@ export const videoRenderer = {
  */
 export const parseSearchResponse = response => {
   let itemSectionContents = get(response, 'data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents', {})
-  let data = itemSectionContents.filter(e => e.playlistRenderer != undefined || e.videoRenderer != undefined)
+  let data = itemSectionContents.filter(e => e.playlistRenderer != undefined || (e?.videoRenderer != undefined && e?.videoRenderer?.lengthText?.simpleText != undefined))
   return data
 }
 

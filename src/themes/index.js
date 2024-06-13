@@ -1,3 +1,4 @@
+import {useColorScheme} from 'react-native';
 import {
   useTheme as useNavigationTheme,
   DefaultTheme,
@@ -7,6 +8,10 @@ import {
  *
  * @returns {LightTheme}
  */
+
+export function useThemeForScheme() {
+  return useColorScheme() === 'dark' ? DarkTheme : LightTheme;
+}
 
 export function useTheme() {
   return useNavigationTheme();
@@ -41,6 +46,7 @@ export const DarkTheme = {
     whiteSmoke: '#F2F2F2',
     eerieBlack: '#1B1A17',
     gray76: '#C2C2C2',
+    overlayBackground: '#FFFFFF50',
   },
 };
 
@@ -73,5 +79,6 @@ export const LightTheme = {
     whiteSmoke: '#F2F2F2',
     eerieBlack: '#1B1A17',
     gray76: '#C2C2C2',
+    overlayBackground: '#00000050',
   },
 };

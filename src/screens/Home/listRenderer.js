@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, TouchableOpacity, View, Dimensions} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
 import {
@@ -15,6 +15,7 @@ import Assets from 'assets/images';
 import {useTheme} from 'themes/index';
 import Text from 'components/Text';
 import ImageIcons from 'components/ImageIcons';
+import {AppConstants} from 'constants/AppConstants';
 
 /**
  * @param {{playlistRenderer} | {videoRenderer}} item
@@ -47,10 +48,12 @@ const ListRenderer = ({item, index, onPress}) => {
           )}
         </View>
         <View style={[styles.textView]}>
-          <Text medium color={theme.colors.text}>
+          <Text medium fontSize={appStyles.xs} color={theme.colors.text}>
             {parseTitle(item)}
           </Text>
-          <Text fontSize={appStyles.xxs} color={theme.colors.text}>
+          <Text
+            fontSize={appStyles.xxs}
+            color={theme.primaryColors.xMediumGrey}>
             {parseDescription(item)}
           </Text>
         </View>
@@ -59,21 +62,19 @@ const ListRenderer = ({item, index, onPress}) => {
     );
   }
   return (
-    <View key={index} style={styles.recommenddationItem}>
-      <SkeletonPlaceholder>
+    <SkeletonPlaceholder>
+      <SkeletonPlaceholder.Item
+        flexDirection="column"
+        alignItems="center"
+        width={appStyles.fullWidth.width}
+        height={65}>
         <SkeletonPlaceholder.Item
-          flexDirection="column"
-          alignItems="center"
-          width={appStyles.fullWidth.width}
-          height={65}>
-          <SkeletonPlaceholder.Item
-            width={'100%'}
-            height={60}
-            borderRadius={10}
-          />
-        </SkeletonPlaceholder.Item>
-      </SkeletonPlaceholder>
-    </View>
+          width={'100%'}
+          height={60}
+          borderRadius={10}
+        />
+      </SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
   );
 };
 
@@ -85,14 +86,14 @@ const styles = StyleSheet.create({
     height: 60,
   },
   textView: {
-    maxWidth: Dimensions.get('window').width - 100 - 30,
+    maxWidth: AppConstants.window.width - 80 - 30,
     height: 50,
     ...appStyles.mLXxs,
     ...appStyles.spaceEvenly,
   },
   img: {
     ...appStyles.mR,
-    width: 100,
+    width: 80,
     height: 50,
   },
   line: {
