@@ -44,7 +44,7 @@ const AppBottomTabs = () => {
         component={History}
         options={{
           tabBarIcon: ({color}) =>
-            tabBarIcon({icon: Assets.timePast, color: color}),
+            tabBarIcon({icon: Assets.history, color: color}),
         }}
       />
       <Tab.Screen

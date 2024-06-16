@@ -405,6 +405,9 @@ export default StyleSheet.create({
   pHLg: {
     paddingHorizontal: 56,
   },
+  pHXL: {
+    paddingHorizontal: 65,
+  },
   pVXs: {
     paddingVertical: 7,
   },

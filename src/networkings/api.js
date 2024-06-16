@@ -40,7 +40,7 @@ export default class API {
   /**
    * @returns {parseSearchResponse}
    */
-  static async getSearchResults(query = 'tiktok remix') {
+  static async getSearchResults(query = 'h20 remix') {
     let body = API.RequestBody.DEFAULT;
     body.query = query;
     let headers = this.initRequestHeader || {};

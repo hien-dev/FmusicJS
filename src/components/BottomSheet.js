@@ -9,9 +9,8 @@ import {
   parseStream,
   parseVideoDetails,
 } from 'networkings/responses/StreamResponse';
-import Video from 'react-native-video';
 import appStyles from 'themes/appStyles';
-import VideoPlayer from './VideoPlayer';
+import VideoPlayer from './VideoComponents/VideoPlayer';
 
 if (AppConstants.android && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -20,7 +19,7 @@ if (AppConstants.android && UIManager.setLayoutAnimationEnabledExperimental) {
 const StreamBotomSheet = () => {
   const bottomSheetRef = useRef(null);
   const theme = useThemeForScheme();
-  const {video, canPlaying, expandedVideo, setExpandedVideo} = useVideoStore();
+  const {video, expandedVideo, setVideo, setExpandedVideo} = useVideoStore();
 
   const videoDetail = useMemo(() => {
     return parseVideoDetails(video);
@@ -78,7 +77,7 @@ const StreamBotomSheet = () => {
     <BottomSheet
       ref={bottomSheetRef}
       onChange={handleSheetChanges}
-      snapPoints={[90, AppConstants.android ? '100%' : '95%']}
+      snapPoints={[90, AppConstants.android ? '100%' : '100%']}
       bottomInset={bottomInset()}
       handleStyle={[
         styles.handleStyle,
@@ -94,8 +93,9 @@ const StreamBotomSheet = () => {
           <VideoPlayer
             videoDetail={videoDetail}
             sourceVideo={sourceVideo}
+            poster={last(videoDetail.thumbnails).url}
             expandedVideo={expandedVideo}
-            canPlaying={canPlaying}
+            cancel={() => setVideo(undefined)}
           />
         )}
       </BottomSheetView>

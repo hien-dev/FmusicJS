@@ -21578,6 +21578,10 @@ export const parseVideoDetails = res => {
   return get(res, 'videoDetails', undefined)
 }
 
+export const parseRelatedVideos = res => {
+  return get(res, 'related_videos', [])
+}
+
 export const parseStream = res => {
   let formats = get(res, 'player_response.streamingData.formats', []);
   return head(formats)
