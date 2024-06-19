@@ -29,6 +29,7 @@ const AppBottomTabs = () => {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarActiveTintColor: theme.colors.text,
+        tabBarInactiveTintColor: theme.primaryColors.xMediumGrey,
         tabBarStyle: {backgroundColor: theme.colors.background},
       }}>
       <Tab.Screen
