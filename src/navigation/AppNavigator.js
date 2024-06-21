@@ -1,5 +1,4 @@
 import React from 'react';
-import {useColorScheme} from 'react-native';
 import {
   NavigationContainer,
   createNavigationContainerRef,
@@ -10,9 +9,10 @@ import Home from 'screens/Home';
 import Albums from 'screens/Albums';
 import Setting from 'screens/Setting';
 import History from 'screens/History';
+import Search from 'screens/Search';
 import ImageIcons from 'components/ImageIcons';
 import Assets from 'assets/images';
-import {useTheme, LightTheme, DarkTheme} from 'themes/index';
+import {useTheme} from 'themes/index';
 import {SCREEN_NAME} from 'constants/ScreenNames';
 
 const AppBottomTabs = () => {
@@ -68,6 +68,7 @@ const AppStack = () => {
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="BottomTabs" component={AppBottomTabs} />
       <Stack.Screen name={SCREEN_NAME.ALBUMS} component={Albums} />
+      <Stack.Screen name={SCREEN_NAME.SEARCH} component={Search} />
     </Stack.Navigator>
   );
 };
@@ -75,8 +76,7 @@ const AppStack = () => {
 export const navigationRef = createNavigationContainerRef();
 
 const AppNavigator = () => {
-  const scheme = useColorScheme();
-  const theme = scheme === 'dark' ? DarkTheme : LightTheme;
+  const theme = useTheme();
 
   return (
     <NavigationContainer ref={navigationRef} theme={theme}>

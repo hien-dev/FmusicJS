@@ -1,13 +1,15 @@
 import axios from 'axios';
 import ytdl from '@ytdl-core';
 import RequestBody from './requests/RequestBody';
-import {searchResponse, parseSearchResponse} from './responses/SearchResponse';
+import {
+  parseSearchNextResponse,
+  parseSearchResponse,
+} from './responses/SearchResponse';
 
 export default class API {
   static RequestBody = RequestBody;
   static URL = class URL {
     static Main = 'https://www.youtube.com/';
-    static #Gapis = 'https://youtubei.googleapis.com';
     static #Endpoint = 'youtubei/v1/';
     static #Key = '?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
     static #PrettyPrint = '&prettyPrint=false';
@@ -40,14 +42,25 @@ export default class API {
   /**
    * @returns {parseSearchResponse}
    */
-  static async getSearchResults(query = 'h20 remix') {
+  static async getSearchResults({
+    query = 'h20 remix',
+    continuation = undefined,
+  }) {
     let body = API.RequestBody.DEFAULT;
-    body.query = query;
+    if (continuation) {
+      body.continuation = continuation;
+      delete body.query;
+    } else {
+      body.query = query;
+      delete body.continuation;
+    }
     let headers = this.initRequestHeader || {};
     let response = await axios.post(this.URL.Search, body, {
       headers: JSON.parse(JSON.stringify(headers)),
     });
-    return parseSearchResponse(response);
+    return continuation
+      ? parseSearchNextResponse(response)
+      : parseSearchResponse(response);
   }
 
   static async getStream(videoId) {

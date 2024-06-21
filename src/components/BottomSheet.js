@@ -3,14 +3,21 @@ import {last} from 'lodash';
 import {StyleSheet, LayoutAnimation, UIManager, View} from 'react-native';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {AppConstants} from 'constants/AppConstants';
-import {useThemeForScheme} from 'themes/index';
+import {useTheme} from 'themes/index';
 import {useVideoStore} from 'stores/videoStore';
 import {
+  parseRelatedVideos,
   parseStream,
   parseVideoDetails,
 } from 'networkings/responses/StreamResponse';
 import appStyles from 'themes/appStyles';
-import VideoPlayer from './VideoComponents/VideoPlayer';
+import VideoPlayer from './VideoPlayer';
+import {FlashList} from '@shopify/flash-list';
+import RelatedVideo from './RelatedVideo';
+import {useNavigationStore} from 'stores/navigationStore';
+import {SCREEN_NAME} from 'constants/ScreenNames';
+import {useMutation} from '@tanstack/react-query';
+import API from 'networkings/api';
 
 if (AppConstants.android && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -18,11 +25,23 @@ if (AppConstants.android && UIManager.setLayoutAnimationEnabledExperimental) {
 
 const StreamBotomSheet = () => {
   const bottomSheetRef = useRef(null);
-  const theme = useThemeForScheme();
+  const theme = useTheme();
+  const {current} = useNavigationStore();
   const {video, expandedVideo, setVideo, setExpandedVideo} = useVideoStore();
+
+  const mutationGetStream = useMutation({
+    mutationFn: videoId => API.getStream(videoId),
+    onSuccess: res => {
+      setVideo(res);
+    },
+  });
 
   const videoDetail = useMemo(() => {
     return parseVideoDetails(video);
+  }, [video]);
+
+  const relatedVideos = useMemo(() => {
+    return parseRelatedVideos(video);
   }, [video]);
 
   const sourceVideo = useMemo(() => {
@@ -63,22 +82,22 @@ const StreamBotomSheet = () => {
     setExpandedVideo(index !== 0);
   };
 
-  const bottomInset = () => {
+  const bottomInset = useMemo(() => {
     if (video === undefined) {
       return -100;
     }
-    // if (viewModel.routeName === 'AlbumScreens') {
-    //     return Utils.isAndroid ? 10 : 15
-    // }
+    if (current === SCREEN_NAME.SEARCH) {
+      return AppConstants.android ? 10 : 0;
+    }
     return AppConstants.android ? 49 : 79;
-  };
+  }, [current, video]);
 
   return (
     <BottomSheet
       ref={bottomSheetRef}
       onChange={handleSheetChanges}
-      snapPoints={[90, AppConstants.android ? '100%' : '100%']}
-      bottomInset={bottomInset()}
+      snapPoints={[90, AppConstants.android ? '100%' : '98%']}
+      bottomInset={bottomInset}
       handleStyle={[
         styles.handleStyle,
         {backgroundColor: theme.colors.background},
@@ -98,6 +117,23 @@ const StreamBotomSheet = () => {
             cancel={() => setVideo(undefined)}
           />
         )}
+        {relatedVideos && expandedVideo && (
+          <FlashList
+            showsVerticalScrollIndicator={false}
+            data={relatedVideos}
+            estimatedItemSize={50}
+            renderItem={({item, index}) => (
+              <RelatedVideo
+                item={item}
+                index={index}
+                onPress={value => {
+                  mutationGetStream.mutate(value);
+                }}
+              />
+            )}
+            ListFooterComponent={<View style={styles.listFooter} />}
+          />
+        )}
       </BottomSheetView>
     </BottomSheet>
   );
@@ -115,6 +151,10 @@ const styles = StyleSheet.create({
   handleStyle: {
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
+  },
+  listFooter: {
+    ...appStyles.fullWidth,
+    height: 130,
   },
 });
 

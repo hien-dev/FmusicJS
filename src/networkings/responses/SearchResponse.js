@@ -17486,15 +17486,18 @@ export const videoRenderer = {
   "searchVideoResultEntityKey": "Egt4Z19oWEkwbV9FYyDnAigB"
 }
 
-/**
- * 
- * @param {searchResponse} response 
- * @returns {[{playlistRenderer}, {videoRenderer}]}
- */
 export const parseSearchResponse = response => {
   let itemSectionContents = get(response, 'data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents', {})
+  let continuation = get(response, 'data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[1].continuationItemRenderer.continuationEndpoint.continuationCommand.token', '')
   let data = itemSectionContents.filter(e => e.playlistRenderer != undefined || (e?.videoRenderer != undefined && e?.videoRenderer?.lengthText?.simpleText != undefined))
-  return data
+  return {data, continuation}
+}
+
+export const parseSearchNextResponse = response => {
+  let itemSectionContents = get(response, 'data.onResponseReceivedCommands[0].appendContinuationItemsAction.continuationItems[0].itemSectionRenderer.contents', {})
+  let continuation = get(response, 'data.onResponseReceivedCommands[0].appendContinuationItemsAction.continuationItems[1].continuationItemRenderer.continuationEndpoint.continuationCommand.token', '')
+  let data = itemSectionContents.filter(e => e.playlistRenderer != undefined || (e?.videoRenderer != undefined && e?.videoRenderer?.lengthText?.simpleText != undefined))
+  return {data, continuation}
 }
 
 /**

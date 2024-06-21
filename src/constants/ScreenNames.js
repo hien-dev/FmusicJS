@@ -3,4 +3,5 @@ export const SCREEN_NAME = {
   ALBUMS: 'ALBUMS',
   HISTORY: 'HISTORY',
   SETTING: 'SETTING',
+  SEARCH: 'SEARCH',
 };

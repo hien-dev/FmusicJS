@@ -2,13 +2,13 @@ import React, {useRef, useState} from 'react';
 import Video from 'react-native-video';
 import Animated, {SlideInDown, SlideOutDown} from 'react-native-reanimated';
 import {StyleSheet} from 'react-native';
-import LoadingView from '../LoadingView';
-import Text from '../Text';
-import VideoControls, {VideoButton} from './VideoControls';
-import {useThemeForScheme} from 'themes/index';
+import LoadingView from './LoadingView';
+import Text from './Text';
+import {useTheme} from 'themes/index';
 import appStyles from 'themes/appStyles';
 import {AppConstants} from 'constants/AppConstants';
 import Assets from 'assets/images';
+import ImageIcons from './ImageIcons';
 
 const VideoPlayer = ({
   videoDetail,
@@ -17,7 +17,7 @@ const VideoPlayer = ({
   expandedVideo,
   cancel,
 }) => {
-  const theme = useThemeForScheme();
+  const theme = useTheme();
   const videoRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [showNotiControls, setShowNotiControls] = useState(false);
@@ -84,15 +84,6 @@ const VideoPlayer = ({
             }}
           />
         )}
-        <VideoControls
-          videoRef={videoRef}
-          loading={loading}
-          expandedVideo={expandedVideo}
-          paused={paused}
-          setPaused={setPaused}
-          currentTime={currentTime}
-          totalTime={totalTime}
-        />
         {loading ? <LoadingView /> : null}
       </Animated.View>
       {videoDetail && (
@@ -109,9 +100,10 @@ const VideoPlayer = ({
             {videoDetail.title}
           </Text>
           {!expandedVideo && (
-            <VideoButton
+            <ImageIcons
               source={Assets.cancel}
               size={25}
+              color={theme.colors.icon}
               onPress={cancel}
               styles={appStyles.mLXs}
             />

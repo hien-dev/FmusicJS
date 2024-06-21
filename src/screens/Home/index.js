@@ -1,23 +1,29 @@
 import React, {useMemo} from 'react';
-import {StyleSheet, View, FlatList} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {FlashList} from '@shopify/flash-list';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import Text from 'components/Text';
 import API from 'networkings/api';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
-import ListRenderer from './listRenderer';
+import ListRenderer from '../../components/ListRenderer';
 import {useVideoStore} from 'stores/videoStore';
 import LoadingView from 'components/LoadingView';
+import ImageIcons from 'components/ImageIcons';
+import Assets from 'assets/images';
+import {useNavigationStore} from 'stores/navigationStore';
+import {SCREEN_NAME} from 'constants/ScreenNames';
 
 const Home = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const {navigate} = useNavigationStore();
   const {setVideo} = useVideoStore();
 
   const {data} = useQuery({
     queryKey: ['Home-List'],
-    queryFn: () => API.getSearchResults(),
+    queryFn: () => API.getSearchResults({}),
   });
 
   const dataPlaceholderList = useMemo(() => {
@@ -33,15 +39,29 @@ const Home = () => {
 
   return (
     <View style={[styles.container, {paddingTop: insets.top}]}>
-      <View style={styles.height40}>
+      <View
+        style={[
+          styles.height60,
+          appStyles.row,
+          appStyles.spaceBetween,
+          appStyles.hCenter,
+        ]}>
         <Text bold fontSize={appStyles.md} color={theme.colors.text}>
           Fmusic
         </Text>
+        <ImageIcons
+          source={Assets.search}
+          size={25}
+          color={theme.colors.icon}
+          onPress={() => {
+            navigate(SCREEN_NAME.SEARCH);
+          }}
+        />
       </View>
-      <FlatList
+      <FlashList
         showsVerticalScrollIndicator={false}
-        data={data ?? dataPlaceholderList}
-        initialNumToRender={30}
+        data={data?.data ?? dataPlaceholderList}
+        estimatedItemSize={50}
         renderItem={({item, index}) => (
           <ListRenderer
             item={item}
@@ -63,8 +83,8 @@ const styles = StyleSheet.create({
     ...appStyles.flex,
     ...appStyles.pHSm,
   },
-  height40: {
-    height: 40,
+  height60: {
+    height: 60,
   },
   listFooter: {
     ...appStyles.fullWidth,
