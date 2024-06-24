@@ -3,5 +3,6 @@ module.exports = {
   extends: ['@react-native'],
   rules: {
     'no-unused-vars': 0,
+    'no-shadow': 'error',
   },
 };

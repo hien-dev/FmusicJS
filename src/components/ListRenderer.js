@@ -2,43 +2,33 @@ import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
-import {
-  parseDescription,
-  parseThumbnail,
-  parseTitle,
-  parseVideoID,
-  playlistRenderer,
-  videoRenderer,
-} from 'networkings/responses/SearchResponse';
+import {parseSearch} from 'networkings/responses/SearchResponse';
 import appStyles from 'themes/appStyles';
 import Assets from 'assets/images';
 import {useTheme} from 'themes/index';
 import Text from 'components/Text';
 import ImageIcons from 'components/ImageIcons';
-import {AppConstants} from 'constants/AppConstants';
+import {Constants} from 'utils/constants';
 
-/**
- * @param {{playlistRenderer} | {videoRenderer}} item
- */
 const ListRenderer = ({item, index, onPress}) => {
   const theme = useTheme();
-
-  if (item && (item.playlistRenderer || item.videoRenderer)) {
+  let data = parseSearch(item);
+  if (data && (data?.playlistId || data?.videoId)) {
     return (
       <TouchableOpacity
-        key={item.playlistRenderer?.playlistId || item.videoRenderer?.videoId}
+        key={data?.playlistId || data?.videoId}
         style={styles.container}
         onPress={() => {
-          onPress(parseVideoID(item));
+          onPress({videoId: data?.videoId, playlistId: data?.playlistId});
         }}>
         <View>
           <FastImage
-            source={{uri: parseThumbnail(item)}}
+            source={{uri: data?.thumbnail}}
             defaultSource={Assets.placeHolderImage}
             style={styles.img}
             resizeMode={'stretch'}
           />
-          {item.playlistRenderer && (
+          {data?.playlistId && (
             <ImageIcons
               source={Assets.playlist}
               size={15}
@@ -49,12 +39,12 @@ const ListRenderer = ({item, index, onPress}) => {
         </View>
         <View style={[styles.textView]}>
           <Text medium fontSize={appStyles.xs} color={theme.colors.text}>
-            {parseTitle(item)}
+            {data?.title}
           </Text>
           <Text
             fontSize={appStyles.xxs}
             color={theme.primaryColors.xMediumGrey}>
-            {parseDescription(item)}
+            {data?.description}
           </Text>
         </View>
         <View style={[styles.line, {backgroundColor: theme.colors.text}]} />
@@ -86,7 +76,7 @@ const styles = StyleSheet.create({
     height: 60,
   },
   textView: {
-    maxWidth: AppConstants.window.width - 80 - 30,
+    maxWidth: Constants.window.width - 80 - 30,
     height: 50,
     ...appStyles.mLXxs,
     ...appStyles.spaceEvenly,

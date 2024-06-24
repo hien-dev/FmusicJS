@@ -9,7 +9,6 @@ module.exports = {
           // This has to be mirrored in tsconfig.json
           assets: './src/assets',
           components: './src/components',
-          constants: './src/constants',
           navigation: './src/navigation',
           networkings: './src/networkings',
           stores: './src/stores',

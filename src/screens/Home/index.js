@@ -7,19 +7,20 @@ import Text from 'components/Text';
 import API from 'networkings/api';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
-import ListRenderer from '../../components/ListRenderer';
-import {useVideoStore} from 'stores/videoStore';
-import LoadingView from 'components/LoadingView';
+import ListRenderer from 'components/ListRenderer';
+import {useVideoPlayer} from 'stores/videoStore';
 import ImageIcons from 'components/ImageIcons';
 import Assets from 'assets/images';
+import {useLoading} from 'stores/appStore';
 import {useNavigationStore} from 'stores/navigationStore';
-import {SCREEN_NAME} from 'constants/ScreenNames';
+import {SCREEN_NAME} from 'utils/constants';
 
 const Home = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const {navigate} = useNavigationStore();
-  const {setVideo} = useVideoStore();
+  const {setVideo} = useVideoPlayer();
+  const {show, hide} = useLoading();
 
   const {data} = useQuery({
     queryKey: ['Home-List'],
@@ -31,9 +32,17 @@ const Home = () => {
   }, []);
 
   const mutationGetStream = useMutation({
-    mutationFn: videoId => API.getStream(videoId),
+    mutationFn: videoId => {
+      show();
+      return API.getStream(videoId);
+    },
     onSuccess: res => {
+      hide();
       setVideo(res);
+    },
+    onError: err => {
+      hide();
+      console.log('error', err);
     },
   });
 
@@ -67,13 +76,19 @@ const Home = () => {
             item={item}
             index={index}
             onPress={value => {
+              if (value?.playlistId) {
+                navigate(SCREEN_NAME.ALBUMS, {
+                  videoId: value?.videoId,
+                  playlistId: value?.playlistId,
+                });
+                return;
+              }
               mutationGetStream.mutate(value.videoId);
             }}
           />
         )}
         ListFooterComponent={<View style={styles.listFooter} />}
       />
-      {mutationGetStream.isPending && <LoadingView />}
     </View>
   );
 };

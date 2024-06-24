@@ -1,7 +1,7 @@
 import Assets from 'assets/images';
 import {isEmpty} from 'lodash';
 import ImageIcons from 'components/ImageIcons';
-import {AppConstants} from 'constants/AppConstants';
+import {Constants} from 'utils/constants';
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
@@ -17,23 +17,32 @@ import {useTheme} from 'themes/index';
 import ListRenderer from 'components/ListRenderer';
 import {useMutation} from '@tanstack/react-query';
 import API from 'networkings/api';
-import {useVideoStore} from 'stores/videoStore';
+import {useVideoPlayer} from 'stores/videoStore';
+import {useLoading} from 'stores/appStore';
 
 const Search = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const {setVideo} = useVideoStore();
+  const {setVideo} = useVideoPlayer();
   const {goBack} = useNavigationStore();
-
+  const {show, hide} = useLoading();
   const [videos, setVideos] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [continuation, setContinuation] = useState(undefined);
 
   const mutationGetSearch = useMutation({
-    mutationFn: query => API.getSearchResults({query}),
+    mutationFn: query => {
+      show();
+      return API.getSearchResults({query});
+    },
     onSuccess: res => {
+      hide();
       setVideos(res?.data ?? []);
       setContinuation(res?.continuation);
+    },
+    onError: err => {
+      hide();
+      console.log('error', err);
     },
   });
 
@@ -46,9 +55,17 @@ const Search = () => {
   });
 
   const mutationGetStream = useMutation({
-    mutationFn: videoId => API.getStream(videoId),
+    mutationFn: videoId => {
+      show();
+      return API.getStream(videoId);
+    },
     onSuccess: res => {
+      hide();
       setVideo(res);
+    },
+    onError: err => {
+      hide();
+      console.log('error', err);
     },
   });
 
@@ -128,7 +145,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   inputView: {
-    width: AppConstants.window.width - 28 - 30,
+    width: Constants.window.width - 28 - 30,
     height: 35,
   },
   radius: {

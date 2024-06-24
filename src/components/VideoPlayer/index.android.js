@@ -2,13 +2,12 @@ import React, {useRef, useState} from 'react';
 import Video from 'react-native-video';
 import Animated, {SlideInDown, SlideOutDown} from 'react-native-reanimated';
 import {StyleSheet} from 'react-native';
-import LoadingView from './LoadingView';
-import Text from './Text';
+import Assets from 'assets/images';
+import Text from 'components/Text';
+import ImageIcons from 'components/ImageIcons';
 import {useTheme} from 'themes/index';
 import appStyles from 'themes/appStyles';
-import {AppConstants} from 'constants/AppConstants';
-import Assets from 'assets/images';
-import ImageIcons from './ImageIcons';
+import {Constants} from 'utils/constants';
 
 const VideoPlayer = ({
   videoDetail,
@@ -22,8 +21,6 @@ const VideoPlayer = ({
   const [loading, setLoading] = useState(false);
   const [showNotiControls, setShowNotiControls] = useState(false);
   const [paused, setPaused] = useState(true);
-  const [currentTime, setCureentTime] = useState(0);
-  const [totalTime, setTotalTime] = useState(0);
 
   const animationVideoContentStyle = () => {
     return {
@@ -60,8 +57,6 @@ const VideoPlayer = ({
             showNotificationControls={showNotiControls}
             style={styles.video}
             onLoadStart={e => {
-              setCureentTime(0);
-              setTotalTime(0);
               setShowNotiControls(false);
               setLoading(true);
             }}
@@ -72,10 +67,7 @@ const VideoPlayer = ({
               setShowNotiControls(true);
               setPaused(false);
             }}
-            onProgress={e => {
-              setCureentTime(e.currentTime);
-              setTotalTime(e.seekableDuration);
-            }}
+            onProgress={e => {}}
             onPlaybackRateChange={e => {
               setPaused(e.playbackRate === 0);
             }}
@@ -84,7 +76,6 @@ const VideoPlayer = ({
             }}
           />
         )}
-        {loading ? <LoadingView /> : null}
       </Animated.View>
       {videoDetail && (
         <>
@@ -95,7 +86,7 @@ const VideoPlayer = ({
             color={theme.colors.text}
             containerStyle={[
               expandedVideo ? appStyles.mVSm : appStyles.mLSm,
-              !expandedVideo && {width: AppConstants.window.width - 150},
+              !expandedVideo && {width: Constants.window.width - 150},
             ]}>
             {videoDetail.title}
           </Text>

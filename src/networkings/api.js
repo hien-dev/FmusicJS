@@ -1,33 +1,28 @@
 import axios from 'axios';
 import ytdl from '@ytdl-core';
-import RequestBody from './requests/RequestBody';
+import RequestBody from 'networkings/requests/RequestBody';
 import {
   parseSearchNextResponse,
   parseSearchResponse,
-} from './responses/SearchResponse';
+} from 'networkings/responses/SearchResponse';
 
 export default class API {
   static RequestBody = RequestBody;
   static URL = class URL {
     static Main = 'https://www.youtube.com/';
     static #Endpoint = 'youtubei/v1/';
-    static #Key = '?key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
-    static #PrettyPrint = '&prettyPrint=false';
+    static #Key = '&key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
+    static #PrettyPrint = '?prettyPrint=false';
 
     static #SwJS = 'sw.js_data';
     static #Search = 'search';
-    static #Suggestion = 'get_search_suggestions';
-    static #Browse = 'browse';
     static #Next = 'next';
-    static #Audio = 'player';
 
     static SwJSdata = this.Main + this.#SwJS;
     static Search =
-      this.Main + this.#Endpoint + this.#Search + this.#Key + this.#PrettyPrint;
-    // static Suggestion =
-    //   this.Main + this.#Endpoint + this.#Suggestion + this.#Parameter;
-    // static Browse = this.Main + this.#Endpoint + this.#Browse + this.#Parameter;
-    // static Next = this.Main + this.#Endpoint + this.#Next + this.#Key;
+      this.Main + this.#Endpoint + this.#Search + this.#PrettyPrint + this.#Key;
+    static Next =
+      this.Main + this.#Endpoint + this.#Next + this.#PrettyPrint + this.#Key;
   };
 
   static initRequestHeader;
@@ -43,16 +38,14 @@ export default class API {
    * @returns {parseSearchResponse}
    */
   static async getSearchResults({
-    query = 'h20 remix',
+    query = 'Co chan nhan',
     continuation = undefined,
   }) {
-    let body = API.RequestBody.DEFAULT;
+    let body = Object.assign({}, API.RequestBody.DEFAULT);
     if (continuation) {
       body.continuation = continuation;
-      delete body.query;
     } else {
       body.query = query;
-      delete body.continuation;
     }
     let headers = this.initRequestHeader || {};
     let response = await axios.post(this.URL.Search, body, {
@@ -61,6 +54,18 @@ export default class API {
     return continuation
       ? parseSearchNextResponse(response)
       : parseSearchResponse(response);
+  }
+
+  static async getAlbums({videoId, playlistId}) {
+    let body = Object.assign({}, API.RequestBody.DEFAULT);
+    body.videoId = videoId;
+    body.playlistId = playlistId;
+    let headers = this.initRequestHeader || {};
+    let response = await axios.post(this.URL.Next, body, {
+      headers: JSON.parse(JSON.stringify(headers)),
+    });
+    console.log(JSON.stringify(response.data));
+    return {};
   }
 
   static async getStream(videoId) {

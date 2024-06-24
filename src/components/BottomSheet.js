@@ -1,25 +1,19 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react';
-import {last} from 'lodash';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {StyleSheet, LayoutAnimation, UIManager, View} from 'react-native';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
-import {AppConstants} from 'constants/AppConstants';
-import {useTheme} from 'themes/index';
-import {useVideoStore} from 'stores/videoStore';
-import {
-  parseRelatedVideos,
-  parseStream,
-  parseVideoDetails,
-} from 'networkings/responses/StreamResponse';
-import appStyles from 'themes/appStyles';
-import VideoPlayer from './VideoPlayer';
-import {FlashList} from '@shopify/flash-list';
-import RelatedVideo from './RelatedVideo';
-import {useNavigationStore} from 'stores/navigationStore';
-import {SCREEN_NAME} from 'constants/ScreenNames';
 import {useMutation} from '@tanstack/react-query';
+import {FlashList} from '@shopify/flash-list';
+import VideoPlayer from 'components/VideoPlayer';
+import RelatedVideo from 'components/RelatedVideo';
+import {useVideoPlayer} from 'stores/videoStore';
+import {useNavigationStore} from 'stores/navigationStore';
 import API from 'networkings/api';
+import {useTheme} from 'themes/index';
+import appStyles from 'themes/appStyles';
+import {Constants, SCREEN_NAME} from 'utils/constants';
+import {useLoading} from 'stores/appStore';
 
-if (AppConstants.android && UIManager.setLayoutAnimationEnabledExperimental) {
+if (Constants.android && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -27,37 +21,24 @@ const StreamBotomSheet = () => {
   const bottomSheetRef = useRef(null);
   const theme = useTheme();
   const {current} = useNavigationStore();
-  const {video, expandedVideo, setVideo, setExpandedVideo} = useVideoStore();
+  const {video, expandedVideo, setVideo, setExpandedVideo, clearVideo} =
+    useVideoPlayer();
+  const {show, hide} = useLoading();
 
   const mutationGetStream = useMutation({
-    mutationFn: videoId => API.getStream(videoId),
+    mutationFn: videoId => {
+      show();
+      return API.getStream(videoId);
+    },
     onSuccess: res => {
+      hide();
       setVideo(res);
     },
+    onError: err => {
+      hide();
+      console.log('error', err);
+    },
   });
-
-  const videoDetail = useMemo(() => {
-    return parseVideoDetails(video);
-  }, [video]);
-
-  const relatedVideos = useMemo(() => {
-    return parseRelatedVideos(video);
-  }, [video]);
-
-  const sourceVideo = useMemo(() => {
-    if (video && videoDetail) {
-      let uri = parseStream(video)?.url;
-      const source = {
-        uri: uri,
-        metadata: {
-          title: videoDetail.title,
-          imageUri: last(videoDetail.thumbnails)?.url,
-        },
-      };
-      return source;
-    }
-    return undefined;
-  }, [video, videoDetail]);
 
   useEffect(() => {
     if (bottomSheetRef.current) {
@@ -86,17 +67,17 @@ const StreamBotomSheet = () => {
     if (video === undefined) {
       return -100;
     }
-    if (current === SCREEN_NAME.SEARCH) {
-      return AppConstants.android ? 10 : 0;
+    if (current === SCREEN_NAME.SEARCH || current === SCREEN_NAME.ALBUMS) {
+      return Constants.android ? 10 : 0;
     }
-    return AppConstants.android ? 49 : 79;
+    return Constants.android ? 49 : 79;
   }, [current, video]);
 
   return (
     <BottomSheet
       ref={bottomSheetRef}
       onChange={handleSheetChanges}
-      snapPoints={[90, AppConstants.android ? '100%' : '98%']}
+      snapPoints={[90, Constants.android ? '100%' : '98%']}
       bottomInset={bottomInset}
       handleStyle={[
         styles.handleStyle,
@@ -110,17 +91,17 @@ const StreamBotomSheet = () => {
         style={[styles.container, {backgroundColor: theme.colors.background}]}>
         {video && (
           <VideoPlayer
-            videoDetail={videoDetail}
-            sourceVideo={sourceVideo}
-            poster={last(videoDetail.thumbnails).url}
+            videoDetail={video.videoDetail}
+            sourceVideo={video.sourceVideo}
+            poster={video.poster}
             expandedVideo={expandedVideo}
-            cancel={() => setVideo(undefined)}
+            cancel={() => clearVideo(undefined)}
           />
         )}
-        {relatedVideos && expandedVideo && (
+        {video?.relatedVideos && expandedVideo && (
           <FlashList
             showsVerticalScrollIndicator={false}
-            data={relatedVideos}
+            data={video.relatedVideos}
             estimatedItemSize={50}
             renderItem={({item, index}) => (
               <RelatedVideo
@@ -141,8 +122,8 @@ const StreamBotomSheet = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: AppConstants.window.width,
-    height: AppConstants.window.height,
+    width: Constants.window.width,
+    height: Constants.window.height,
     ...appStyles.pHSm,
   },
   size: {

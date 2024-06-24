@@ -6,7 +6,7 @@ import appStyles from 'themes/appStyles';
 import Assets from 'assets/images';
 import {useTheme} from 'themes/index';
 import Text from 'components/Text';
-import {AppConstants} from 'constants/AppConstants';
+import {Constants} from 'utils/constants';
 
 const RelatedVideo = ({item, index, onPress}) => {
   const theme = useTheme();
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     height: 60,
   },
   textView: {
-    maxWidth: AppConstants.window.width - 80 - 30,
+    maxWidth: Constants.window.width - 80 - 30,
     height: 50,
     ...appStyles.mLXxs,
     ...appStyles.spaceEvenly,

@@ -4,7 +4,15 @@ const android = Platform.OS === 'android';
 const iOS = Platform.OS === 'ios';
 const window = Dimensions.get('window');
 
-export const AppConstants = {
+export const SCREEN_NAME = {
+  HOME: 'HOME',
+  ALBUMS: 'ALBUMS',
+  HISTORY: 'HISTORY',
+  SETTING: 'SETTING',
+  SEARCH: 'SEARCH',
+};
+
+export const Constants = {
   android,
   iOS,
   window,

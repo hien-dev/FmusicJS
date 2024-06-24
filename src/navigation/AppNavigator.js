@@ -13,7 +13,7 @@ import Search from 'screens/Search';
 import ImageIcons from 'components/ImageIcons';
 import Assets from 'assets/images';
 import {useTheme} from 'themes/index';
-import {SCREEN_NAME} from 'constants/ScreenNames';
+import {SCREEN_NAME} from 'utils/constants';
 
 const AppBottomTabs = () => {
   const Tab = createBottomTabNavigator();
