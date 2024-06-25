@@ -5,12 +5,19 @@ export const parseVideo = res => {
     return undefined;
   }
   let videoDetail = get(res, 'videoDetails', undefined);
-  let poster = last(videoDetail.thumbnails)?.url;
+  let streamingData = head(
+    get(res, 'player_response.streamingData.formats', []),
+  );
+  let poster = {
+    url: last(videoDetail.thumbnails)?.url,
+    width: streamingData?.width,
+    height: streamingData?.height,
+  };
   let sourceVideo = {
-    uri: head(get(res, 'player_response.streamingData.formats', []))?.url,
+    uri: streamingData?.url,
     metadata: {
-      title: videoDetail.title,
-      imageUri: poster,
+      title: videoDetail?.title,
+      imageUri: poster?.url,
     },
   };
   return {
@@ -18,5 +25,6 @@ export const parseVideo = res => {
     videoDetail,
     relatedVideos: get(res, 'related_videos', []),
     poster,
+    author: videoDetail?.author?.name,
   };
 };

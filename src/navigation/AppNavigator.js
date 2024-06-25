@@ -15,6 +15,19 @@ import Assets from 'assets/images';
 import {useTheme} from 'themes/index';
 import {SCREEN_NAME} from 'utils/constants';
 
+const HomeScreen = () => {
+  const HomeStack = createNativeStackNavigator();
+  return (
+    <HomeStack.Navigator
+      initialRouteName={SCREEN_NAME.HOME}
+      screenOptions={{headerShown: false}}>
+      <HomeStack.Screen name={SCREEN_NAME.HOME} component={Home} />
+      <HomeStack.Screen name={SCREEN_NAME.ALBUMS} component={Albums} />
+      <HomeStack.Screen name={SCREEN_NAME.SEARCH} component={Search} />
+    </HomeStack.Navigator>
+  );
+};
+
 const AppBottomTabs = () => {
   const Tab = createBottomTabNavigator();
   const theme = useTheme();
@@ -24,7 +37,7 @@ const AppBottomTabs = () => {
 
   return (
     <Tab.Navigator
-      initialRouteName={SCREEN_NAME.HOME}
+      initialRouteName={SCREEN_NAME.HOME_NAVIGATOR}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
@@ -33,8 +46,8 @@ const AppBottomTabs = () => {
         tabBarStyle: {backgroundColor: theme.colors.background},
       }}>
       <Tab.Screen
-        name={SCREEN_NAME.HOME}
-        component={Home}
+        name={SCREEN_NAME.HOME_NAVIGATOR}
+        component={HomeScreen}
         options={{
           tabBarIcon: ({color}) =>
             tabBarIcon({icon: Assets.home, color: color}),
@@ -67,8 +80,6 @@ const AppStack = () => {
       initialRouteName="BottomTabs"
       screenOptions={{headerShown: false}}>
       <Stack.Screen name="BottomTabs" component={AppBottomTabs} />
-      <Stack.Screen name={SCREEN_NAME.ALBUMS} component={Albums} />
-      <Stack.Screen name={SCREEN_NAME.SEARCH} component={Search} />
     </Stack.Navigator>
   );
 };

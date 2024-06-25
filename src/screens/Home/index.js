@@ -87,6 +87,7 @@ const Home = () => {
                 navigate(SCREEN_NAME.ALBUMS, {
                   videoId: value?.videoId,
                   playlistId: value?.playlistId,
+                  title: value?.title,
                 });
                 return;
               }
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
   },
   listFooter: {
     ...appStyles.fullWidth,
-    height: 100,
+    height: 80,
   },
 });
 

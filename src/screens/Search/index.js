@@ -2,7 +2,7 @@ import Assets from 'assets/images';
 import {isEmpty} from 'lodash';
 import ImageIcons from 'components/ImageIcons';
 import {Constants} from 'utils/constants';
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -26,6 +26,7 @@ const Search = () => {
   const {setVideo} = useVideoPlayer();
   const {goBack} = useNavigationStore();
   const {show, hide} = useAppStore();
+  const ref = useRef(null);
   const [videos, setVideos] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [continuation, setContinuation] = useState(undefined);
@@ -37,6 +38,9 @@ const Search = () => {
     },
     onSuccess: res => {
       hide();
+      if (ref) {
+        ref.current?.scrollToOffset(0);
+      }
       setVideos(res?.data ?? []);
       setContinuation(res?.continuation);
     },
@@ -100,6 +104,7 @@ const Search = () => {
       </View>
       {!isEmpty(videos) && (
         <FlatList
+          ref={ref}
           showsVerticalScrollIndicator={false}
           data={videos}
           estimatedItemSize={30}
@@ -154,7 +159,7 @@ const styles = StyleSheet.create({
   listFooter: {
     ...appStyles.fullWidth,
     ...appStyles.pTSm,
-    height: 100,
+    height: 120,
   },
 });
 

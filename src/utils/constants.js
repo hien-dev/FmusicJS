@@ -5,6 +5,7 @@ const iOS = Platform.OS === 'ios';
 const window = Dimensions.get('window');
 
 export const SCREEN_NAME = {
+  HOME_NAVIGATOR: 'HOME_NAVIGATOR',
   HOME: 'HOME',
   ALBUMS: 'ALBUMS',
   HISTORY: 'HISTORY',

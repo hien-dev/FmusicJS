@@ -1,23 +1,28 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Video from 'react-native-video';
 import Animated, {SlideInDown, SlideOutDown} from 'react-native-reanimated';
 import {StyleSheet} from 'react-native';
 import {useTheme} from 'themes/index';
 import appStyles from 'themes/appStyles';
+import {Constants} from 'utils/constants';
 
 const VideoPlayer = ({sourceVideo, poster, expandedVideo}) => {
   const theme = useTheme();
   const videoRef = useRef(null);
+  const [controls, setControls] = useState(true);
   const [showNotiControls, setShowNotiControls] = useState(false);
   const [paused, setPaused] = useState(true);
+
+  useEffect(() => {
+    setControls(expandedVideo);
+  }, [expandedVideo]);
 
   const animationVideoContentStyle = () => {
     return {
       width: '100%',
-      height: expandedVideo ? 220 : 0,
+      height: (Constants.window.width * poster.height) / poster.width,
       borderWidth: 1,
       borderColor: theme.colors.border,
-      opacity: expandedVideo ? 1 : 0,
     };
   };
 
@@ -34,9 +39,10 @@ const VideoPlayer = ({sourceVideo, poster, expandedVideo}) => {
             source={sourceVideo}
             poster={poster}
             paused={paused}
-            resizeMode={'stretch'}
-            posterResizeMode={'stretch'}
+            resizeMode={'cover'}
+            posterResizeMode={'cover'}
             ignoreSilentSwitch={'ignore'}
+            controls={controls}
             playWhenInactive={true}
             playInBackground={false}
             showNotificationControls={showNotiControls}
