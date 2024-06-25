@@ -19,7 +19,7 @@ const ListRenderer = ({item, index, onPress}) => {
         key={data?.playlistId || data?.videoId}
         style={styles.container}
         onPress={() => {
-          onPress({videoId: data?.videoId, playlistId: data?.playlistId});
+          onPress(data);
         }}>
         <View>
           <FastImage

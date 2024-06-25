@@ -2,23 +2,12 @@ import React, {useRef, useState} from 'react';
 import Video from 'react-native-video';
 import Animated, {SlideInDown, SlideOutDown} from 'react-native-reanimated';
 import {StyleSheet} from 'react-native';
-import Assets from 'assets/images';
-import Text from 'components/Text';
-import ImageIcons from 'components/ImageIcons';
 import {useTheme} from 'themes/index';
 import appStyles from 'themes/appStyles';
-import {Constants} from 'utils/constants';
 
-const VideoPlayer = ({
-  videoDetail,
-  sourceVideo,
-  poster,
-  expandedVideo,
-  cancel,
-}) => {
+const VideoPlayer = ({sourceVideo, poster, expandedVideo}) => {
   const theme = useTheme();
   const videoRef = useRef(null);
-  const [loading, setLoading] = useState(false);
   const [showNotiControls, setShowNotiControls] = useState(false);
   const [paused, setPaused] = useState(true);
 
@@ -43,7 +32,7 @@ const VideoPlayer = ({
       ]}>
       <Animated.View
         style={[styles.videoContent, animationVideoContentStyle()]}>
-        {videoDetail && sourceVideo && (
+        {sourceVideo && (
           <Video
             ref={videoRef}
             source={sourceVideo}
@@ -58,7 +47,6 @@ const VideoPlayer = ({
             style={styles.video}
             onLoadStart={e => {
               setShowNotiControls(false);
-              setLoading(true);
             }}
             onEnd={() => {
               setPaused(true);
@@ -71,36 +59,10 @@ const VideoPlayer = ({
             onPlaybackRateChange={e => {
               setPaused(e.playbackRate === 0);
             }}
-            onBuffer={e => {
-              setLoading(e.isBuffering);
-            }}
+            onBuffer={e => {}}
           />
         )}
       </Animated.View>
-      {videoDetail && (
-        <>
-          <Text
-            bold
-            fontSize={expandedVideo ? appStyles.sm : appStyles.xs}
-            numberOfLines={expandedVideo ? 3 : 2}
-            color={theme.colors.text}
-            containerStyle={[
-              expandedVideo ? appStyles.mVSm : appStyles.mLSm,
-              !expandedVideo && {width: Constants.window.width - 150},
-            ]}>
-            {videoDetail.title}
-          </Text>
-          {!expandedVideo && (
-            <ImageIcons
-              source={Assets.cancel}
-              size={25}
-              color={theme.colors.icon}
-              onPress={cancel}
-              styles={appStyles.mLXs}
-            />
-          )}
-        </>
-      )}
     </Animated.View>
   );
 };

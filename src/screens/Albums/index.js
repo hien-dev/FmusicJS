@@ -2,11 +2,11 @@ import React, {useEffect} from 'react';
 import {View} from 'react-native';
 import {useMutation} from '@tanstack/react-query';
 import API from 'networkings/api';
-import {useLoading} from 'stores/appStore';
+import {useAppStore} from 'stores/appStore';
 
 const Albums = ({navigation, route}) => {
   const {playlistId, videoId} = route.params;
-  const {show, hide} = useLoading();
+  const {show, hide} = useAppStore();
 
   const mutationGetAlbums = useMutation({
     mutationFn: value => {
@@ -22,7 +22,8 @@ const Albums = ({navigation, route}) => {
     if (playlistId && videoId) {
       mutationGetAlbums.mutate({videoId, playlistId});
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playlistId, videoId]);
 
   return <View />;
 };

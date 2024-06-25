@@ -18,6 +18,7 @@ const Assets = {
   volumeOff: require('./volumeOff.png'),
   cancel: require('./cancel.png'),
   arrowBack: require('./arrow_back.png'),
+  arrowDown: require('./arrow_down.png'),
 };
 
 export default Assets;

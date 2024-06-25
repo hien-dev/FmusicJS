@@ -13,12 +13,12 @@ import appStyles from 'themes/appStyles';
 import AppNavigator from 'navigation/AppNavigator';
 import API from 'networkings/api';
 import StreamBotomSheet from 'components/BottomSheet';
-import {useLoading} from 'stores/appStore';
+import {useAppStore} from 'stores/appStore';
 import LoadingView from 'components/LoadingView';
 
 const queryClient = new QueryClient();
 const App = () => {
-  const {loading} = useLoading();
+  const {loading} = useAppStore();
   useEffect(() => {
     (async () => {
       let hide = await API.initialize();

@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {FlashList} from '@shopify/flash-list';
@@ -11,7 +11,7 @@ import ListRenderer from 'components/ListRenderer';
 import {useVideoPlayer} from 'stores/videoStore';
 import ImageIcons from 'components/ImageIcons';
 import Assets from 'assets/images';
-import {useLoading} from 'stores/appStore';
+import {useAppStore} from 'stores/appStore';
 import {useNavigationStore} from 'stores/navigationStore';
 import {SCREEN_NAME} from 'utils/constants';
 
@@ -20,7 +20,7 @@ const Home = () => {
   const insets = useSafeAreaInsets();
   const {navigate} = useNavigationStore();
   const {setVideo} = useVideoPlayer();
-  const {show, hide} = useLoading();
+  const {show, hide, paddingTop, setPaddingTop} = useAppStore();
 
   const {data} = useQuery({
     queryKey: ['Home-List'],
@@ -45,6 +45,13 @@ const Home = () => {
       console.log('error', err);
     },
   });
+
+  useEffect(() => {
+    if (!paddingTop) {
+      setPaddingTop(insets.top);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paddingTop]);
 
   return (
     <View style={[styles.container, {paddingTop: insets.top}]}>

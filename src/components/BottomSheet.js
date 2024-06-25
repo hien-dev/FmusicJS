@@ -1,50 +1,48 @@
 import React, {useEffect, useMemo, useRef} from 'react';
-import {StyleSheet, LayoutAnimation, UIManager, View} from 'react-native';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
-import {useMutation} from '@tanstack/react-query';
-import {FlashList} from '@shopify/flash-list';
-import VideoPlayer from 'components/VideoPlayer';
-import RelatedVideo from 'components/RelatedVideo';
-import {useVideoPlayer} from 'stores/videoStore';
-import {useNavigationStore} from 'stores/navigationStore';
-import API from 'networkings/api';
-import {useTheme} from 'themes/index';
+import {
+  LayoutAnimation,
+  StyleSheet,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import Text from 'components/Text';
 import appStyles from 'themes/appStyles';
 import {Constants, SCREEN_NAME} from 'utils/constants';
-import {useLoading} from 'stores/appStore';
+import {useVideoPlayer} from 'stores/videoStore';
+import {useNavigationStore} from 'stores/navigationStore';
+import {Marquee} from '@animatereactnative/marquee';
+import {useAppStore} from 'stores/appStore';
+import ImageIcons from './ImageIcons';
+import Assets from 'assets/images';
+import VideoPlayer from './VideoPlayer';
+import {useTheme} from 'themes/index';
 
 if (Constants.android && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 const StreamBotomSheet = () => {
-  const bottomSheetRef = useRef(null);
+  const {paddingTop} = useAppStore();
   const theme = useTheme();
   const {current} = useNavigationStore();
-  const {video, expandedVideo, setVideo, setExpandedVideo, clearVideo} =
-    useVideoPlayer();
-  const {show, hide} = useLoading();
+  const {video, expandedVideo, setExpandedVideo, clearVideo} = useVideoPlayer();
 
-  const mutationGetStream = useMutation({
-    mutationFn: videoId => {
-      show();
-      return API.getStream(videoId);
-    },
-    onSuccess: res => {
-      hide();
-      setVideo(res);
-    },
-    onError: err => {
-      hide();
-      console.log('error', err);
-    },
-  });
+  const sheetRef = useRef(null);
+  const bottomInset = useMemo(() => {
+    if (video === undefined) {
+      return -100;
+    }
+    if (current === SCREEN_NAME.SEARCH || current === SCREEN_NAME.ALBUMS) {
+      return Constants.android ? 10 : 0;
+    }
+    return Constants.android ? 49 : 79;
+  }, [current, video]);
 
   useEffect(() => {
-    if (bottomSheetRef.current) {
-      expandedVideo
-        ? bottomSheetRef.current.expand()
-        : bottomSheetRef.current.collapse();
+    if (sheetRef.current) {
+      expandedVideo ? sheetRef.current.expand() : sheetRef.current.collapse();
     }
   }, [expandedVideo]);
 
@@ -63,79 +61,103 @@ const StreamBotomSheet = () => {
     setExpandedVideo(index !== 0);
   };
 
-  const bottomInset = useMemo(() => {
-    if (video === undefined) {
-      return -100;
-    }
-    if (current === SCREEN_NAME.SEARCH || current === SCREEN_NAME.ALBUMS) {
-      return Constants.android ? 10 : 0;
-    }
-    return Constants.android ? 49 : 79;
-  }, [current, video]);
+  const emptyView = () => <View style={styles.emptyView} />;
+
+  const handleComponent = () => (
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={() => setExpandedVideo(!expandedVideo)}
+      style={[
+        styles.handleComponent,
+        {backgroundColor: theme.colors.background},
+      ]}>
+      <View style={styles.iconLeft}>
+        <ImageIcons source={Assets.arrowDown} />
+      </View>
+      {expandedVideo ? (
+        <Text fontSize={appStyles.sm} textAlign={'center'} bold>
+          {'FMusic Mix'}
+        </Text>
+      ) : (
+        <Marquee spacing={120} speed={1}>
+          <Text fontSize={appStyles.sm} bold>
+            {video?.videoDetail?.title}
+          </Text>
+        </Marquee>
+      )}
+      {!expandedVideo && (
+        <View style={styles.iconRight}>
+          <ImageIcons source={Assets.cancel} onPress={clearVideo} />
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 
   return (
     <BottomSheet
-      ref={bottomSheetRef}
-      onChange={handleSheetChanges}
-      snapPoints={[90, Constants.android ? '100%' : '98%']}
+      ref={sheetRef}
+      topInset={paddingTop}
       bottomInset={bottomInset}
-      handleStyle={[
-        styles.handleStyle,
-        {backgroundColor: theme.colors.background},
-      ]}
-      handleIndicatorStyle={[
-        styles.size,
-        {backgroundColor: theme.colors.border},
-      ]}>
-      <BottomSheetView
-        style={[styles.container, {backgroundColor: theme.colors.background}]}>
+      snapPoints={[70, '100%']}
+      enableHandlePanningGesture={false}
+      enableContentPanningGesture={false}
+      onChange={handleSheetChanges}
+      handleComponent={emptyView}>
+      <BottomSheetScrollView
+        contentContainerStyle={[{backgroundColor: theme.colors.background}]}>
+        {handleComponent()}
         {video && (
           <VideoPlayer
-            videoDetail={video.videoDetail}
             sourceVideo={video.sourceVideo}
-            poster={video.poster}
             expandedVideo={expandedVideo}
-            cancel={() => clearVideo(undefined)}
+            poster={video.poster}
           />
         )}
-        {video?.relatedVideos && expandedVideo && (
-          <FlashList
-            showsVerticalScrollIndicator={false}
-            data={video.relatedVideos}
-            estimatedItemSize={50}
-            renderItem={({item, index}) => (
-              <RelatedVideo
-                item={item}
-                index={index}
-                onPress={value => {
-                  mutationGetStream.mutate(value);
-                }}
-              />
-            )}
-            ListFooterComponent={<View style={styles.listFooter} />}
-          />
-        )}
-      </BottomSheetView>
+      </BottomSheetScrollView>
     </BottomSheet>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: Constants.window.width,
-    height: Constants.window.height,
-    ...appStyles.pHSm,
+  contentContainer: {
+    backgroundColor: '#FFF',
   },
-  size: {
-    width: 50,
+  emptyView: {
+    backgroundColor: '#FFF',
   },
-  handleStyle: {
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-  },
-  listFooter: {
+  handleComponent: {
     ...appStyles.fullWidth,
-    height: 130,
+    ...appStyles.vCenter,
+    ...appStyles.pHSm,
+    height: 70,
+    shadowColor: '#D0D0D0',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowRadius: 10,
+    shadowOpacity: 1.0,
+  },
+  iconRight: {
+    position: 'absolute',
+    width: 38,
+    height: 70,
+    top: 0,
+    bottom: 0,
+    right: 0,
+    justifyContent: 'center',
+    backgroundColor: '#FAFAFA',
+  },
+  iconLeft: {
+    position: 'absolute',
+    width: 38,
+    height: 70,
+    top: 0,
+    bottom: 0,
+    paddingLeft: 14,
+    justifyContent: 'center',
+    backgroundColor: '#FAFAFA',
+    zIndex: 1,
   },
 });
 

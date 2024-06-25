@@ -18,14 +18,14 @@ import ListRenderer from 'components/ListRenderer';
 import {useMutation} from '@tanstack/react-query';
 import API from 'networkings/api';
 import {useVideoPlayer} from 'stores/videoStore';
-import {useLoading} from 'stores/appStore';
+import {useAppStore} from 'stores/appStore';
 
 const Search = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const {setVideo} = useVideoPlayer();
   const {goBack} = useNavigationStore();
-  const {show, hide} = useLoading();
+  const {show, hide} = useAppStore();
   const [videos, setVideos] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [continuation, setContinuation] = useState(undefined);

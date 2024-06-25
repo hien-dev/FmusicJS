@@ -3,7 +3,7 @@ import {Image, TouchableOpacity} from 'react-native';
 
 const ImageIcons = ({
   source,
-  size = 30,
+  size = 24,
   color = '#000000',
   styles,
   onPress,

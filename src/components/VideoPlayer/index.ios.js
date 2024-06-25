@@ -2,33 +2,22 @@ import React, {useRef, useState} from 'react';
 import Video from 'react-native-video';
 import Animated, {SlideInDown, SlideOutDown} from 'react-native-reanimated';
 import {StyleSheet} from 'react-native';
-import Assets from 'assets/images';
-import Text from 'components/Text';
-import ImageIcons from 'components/ImageIcons';
 import {useTheme} from 'themes/index';
 import appStyles from 'themes/appStyles';
-import {Constants} from 'utils/constants';
 
-const VideoPlayer = ({
-  videoDetail,
-  sourceVideo,
-  poster,
-  expandedVideo,
-  cancel,
-}) => {
+const VideoPlayer = ({sourceVideo, poster, expandedVideo}) => {
   const theme = useTheme();
   const videoRef = useRef(null);
-  const [loading, setLoading] = useState(false);
   const [showNotiControls, setShowNotiControls] = useState(false);
   const [paused, setPaused] = useState(true);
 
   const animationVideoContentStyle = () => {
     return {
-      width: expandedVideo ? '100%' : 70,
-      height: expandedVideo ? 220 : 50,
-      marginTop: expandedVideo ? 20 : 0,
-      borderWidth: expandedVideo ? 3 : 1,
+      width: '100%',
+      height: expandedVideo ? 220 : 0,
+      borderWidth: 1,
       borderColor: theme.colors.border,
+      opacity: expandedVideo ? 1 : 0,
     };
   };
 
@@ -36,14 +25,10 @@ const VideoPlayer = ({
     <Animated.View
       entering={SlideInDown}
       exiting={SlideOutDown}
-      style={[
-        styles.videoContainer,
-        !expandedVideo && appStyles.row,
-        !expandedVideo && appStyles.hCenter,
-      ]}>
+      style={[styles.videoContainer]}>
       <Animated.View
         style={[styles.videoContent, animationVideoContentStyle()]}>
-        {videoDetail && sourceVideo && (
+        {sourceVideo && (
           <Video
             ref={videoRef}
             source={sourceVideo}
@@ -58,7 +43,6 @@ const VideoPlayer = ({
             style={styles.video}
             onLoadStart={e => {
               setShowNotiControls(false);
-              setLoading(true);
             }}
             onEnd={() => {
               setPaused(true);
@@ -71,36 +55,10 @@ const VideoPlayer = ({
             onPlaybackRateChange={e => {
               setPaused(e.playbackRate === 0);
             }}
-            onBuffer={e => {
-              setLoading(e.isBuffering);
-            }}
+            onBuffer={e => {}}
           />
         )}
       </Animated.View>
-      {videoDetail && (
-        <>
-          <Text
-            bold
-            fontSize={expandedVideo ? appStyles.sm : appStyles.xs}
-            numberOfLines={expandedVideo ? 3 : 2}
-            color={theme.colors.text}
-            containerStyle={[
-              expandedVideo ? appStyles.mVSm : appStyles.mLSm,
-              !expandedVideo && {width: Constants.window.width - 150},
-            ]}>
-            {videoDetail.title}
-          </Text>
-          {!expandedVideo && (
-            <ImageIcons
-              source={Assets.cancel}
-              size={25}
-              color={theme.colors.icon}
-              onPress={cancel}
-              styles={appStyles.mLXs}
-            />
-          )}
-        </>
-      )}
     </Animated.View>
   );
 };
