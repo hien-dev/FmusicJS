@@ -5,6 +5,7 @@ import {
   parseSearchNextResponse,
   parseSearchResponse,
 } from 'networkings/responses/SearchResponse';
+import {parseAlbumsResponse} from './responses/AlbumsResponse';
 
 export default class API {
   static RequestBody = RequestBody;
@@ -38,7 +39,7 @@ export default class API {
    * @returns {parseSearchResponse}
    */
   static async getSearchResults({
-    query = 'Co chan nhan',
+    query = 'H20 remix',
     continuation = undefined,
   }) {
     let body = Object.assign({}, API.RequestBody.DEFAULT);
@@ -64,8 +65,7 @@ export default class API {
     let response = await axios.post(this.URL.Next, body, {
       headers: JSON.parse(JSON.stringify(headers)),
     });
-    console.log(JSON.stringify(response.data));
-    return {};
+    return parseAlbumsResponse(response);
   }
 
   static async getStream(videoId) {

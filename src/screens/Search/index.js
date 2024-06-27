@@ -1,30 +1,25 @@
-import Assets from 'assets/images';
-import {isEmpty} from 'lodash';
-import ImageIcons from 'components/ImageIcons';
-import {Constants} from 'utils/constants';
 import React, {useRef, useState} from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import {ActivityIndicator, StyleSheet, TextInput, View} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigationStore} from 'stores/navigationStore';
-import appStyles from 'themes/appStyles';
-import {useTheme} from 'themes/index';
-import ListRenderer from 'components/ListRenderer';
 import {useMutation} from '@tanstack/react-query';
+import {isEmpty} from 'lodash';
+import Assets from 'assets/images';
+import ImageIcons from 'components/ImageIcons';
+import ListRenderer from 'components/ListRenderer';
 import API from 'networkings/api';
+import {useNavigationStore} from 'stores/navigationStore';
 import {useVideoPlayer} from 'stores/videoStore';
 import {useAppStore} from 'stores/appStore';
+import appStyles from 'themes/appStyles';
+import {useTheme} from 'themes/index';
+import {Constants, SCREEN_NAME} from 'utils/constants';
 
 const Search = () => {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const {setVideo} = useVideoPlayer();
-  const {goBack} = useNavigationStore();
+  const {goBack, navigate} = useNavigationStore();
   const {show, hide} = useAppStore();
   const ref = useRef(null);
   const [videos, setVideos] = useState([]);
@@ -119,6 +114,14 @@ const Search = () => {
               item={item}
               index={index}
               onPress={value => {
+                if (value?.playlistId) {
+                  navigate(SCREEN_NAME.ALBUMS, {
+                    videoId: value?.videoId,
+                    playlistId: value?.playlistId,
+                    title: value?.title,
+                  });
+                  return;
+                }
                 mutationGetStream.mutate(value.videoId);
               }}
             />

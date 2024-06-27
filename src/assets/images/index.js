@@ -19,6 +19,8 @@ const Assets = {
   cancel: require('./cancel.png'),
   arrowBack: require('./arrow_back.png'),
   arrowDown: require('./arrow_down.png'),
+  play_circle: require('./play_circle.png'),
+  pause_circle: require('./pause_circle.png'),
 };
 
 export default Assets;

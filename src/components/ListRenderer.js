@@ -1,7 +1,6 @@
-import React from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, {memo} from 'react';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import FastImage from 'react-native-fast-image';
 import {parseSearch} from 'networkings/responses/SearchResponse';
 import appStyles from 'themes/appStyles';
 import Assets from 'assets/images';
@@ -9,20 +8,30 @@ import {useTheme} from 'themes/index';
 import Text from 'components/Text';
 import ImageIcons from 'components/ImageIcons';
 import {Constants} from 'utils/constants';
+import {parseAlbum} from 'networkings/responses/AlbumsResponse';
 
-const ListRenderer = ({item, index, onPress}) => {
+const ListRenderer = memo(props => {
+  const {item, onPress, isHome = true} = props;
   const theme = useTheme();
-  let data = parseSearch(item);
+  let data = isHome ? parseSearch(item) : parseAlbum(item);
+  if (data.message) {
+    return (
+      <View style={styles.messageText}>
+        <Text medium fontSize={appStyles.xs} color={theme.colors.border}>
+          {data?.message.text}
+        </Text>
+      </View>
+    );
+  }
   if (data && (data?.playlistId || data?.videoId)) {
     return (
       <TouchableOpacity
-        key={data?.playlistId || data?.videoId}
         style={styles.container}
         onPress={() => {
           onPress(data);
         }}>
         <View>
-          <FastImage
+          <Image
             source={{uri: data?.thumbnail}}
             defaultSource={Assets.placeHolderImage}
             style={styles.img}
@@ -66,7 +75,7 @@ const ListRenderer = ({item, index, onPress}) => {
       </SkeletonPlaceholder.Item>
     </SkeletonPlaceholder>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -96,6 +105,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 3,
     bottom: 3,
+  },
+  messageText: {
+    ...appStyles.hCenter,
+    ...appStyles.vCenter,
+    height: 60,
+    paddingBottom: 10,
   },
 });
 
