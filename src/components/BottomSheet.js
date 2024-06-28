@@ -26,7 +26,8 @@ if (Constants.android && UIManager.setLayoutAnimationEnabledExperimental) {
 const StreamBotomSheet = () => {
   const {paddingTop} = useAppStore();
   const theme = useTheme();
-  const {video, expandedVideo, setExpandedVideo, clearVideo} = useVideoPlayer();
+  const {video, expandedVideo, setExpandedVideo, paused, setPaused} =
+    useVideoPlayer();
   const rotateShareValue = useSharedValue(0);
   const sheetRef = useRef(null);
   const bottomInset = useMemo(() => {
@@ -87,31 +88,21 @@ const StreamBotomSheet = () => {
           styles={rotateStyle}
         />
       </View>
-      {expandedVideo ? (
-        <Text
-          fontSize={appStyles.xs}
-          color={theme.colors.text}
-          textAlign={'center'}
-          bold>
-          {'FMusic Mix'}
-        </Text>
-      ) : (
-        <>
-          <Marquee spacing={120} speed={1}>
-            <Text color={theme.colors.text} fontSize={appStyles.xs} bold>
-              {video?.videoDetail?.title}
-            </Text>
-          </Marquee>
-          <Text
-            color={theme.colors.border}
-            fontSize={appStyles.xs}
-            medium
-            textAlign={'center'}
-            containerStyle={styles.mT8}>
-            {video?.author}
+      <>
+        <Marquee spacing={120} speed={0.5}>
+          <Text color={theme.colors.text} fontSize={appStyles.xs} bold>
+            {video?.videoDetail?.title}
           </Text>
-        </>
-      )}
+        </Marquee>
+        <Text
+          color={theme.colors.border}
+          fontSize={appStyles.xs}
+          medium
+          textAlign={'center'}
+          containerStyle={styles.mT8}>
+          {video?.author}
+        </Text>
+      </>
       {!expandedVideo && (
         <View
           style={[
@@ -119,9 +110,9 @@ const StreamBotomSheet = () => {
             {backgroundColor: theme.colors.background},
           ]}>
           <ImageIcons
-            source={Assets.cancel}
+            source={paused ? Assets.play_circle : Assets.pause_circle}
             color={theme.colors.icon}
-            onPress={clearVideo}
+            onPress={() => setPaused(!paused)}
           />
         </View>
       )}
@@ -135,20 +126,13 @@ const StreamBotomSheet = () => {
       bottomInset={bottomInset}
       snapPoints={[70, '100%']}
       enableHandlePanningGesture={false}
-      enablePanDownToClose
       enableDynamicSizing={false}
       onChange={handleSheetChanges}
       handleComponent={emptyView}>
       <BottomSheetScrollView
         contentContainerStyle={[{backgroundColor: theme.colors.background}]}>
         {handleComponent()}
-        {video && (
-          <VideoPlayer
-            sourceVideo={video.sourceVideo}
-            expandedVideo={expandedVideo}
-            poster={video.poster}
-          />
-        )}
+        <VideoPlayer />
       </BottomSheetScrollView>
     </BottomSheet>
   );
