@@ -39,7 +39,7 @@ const DarkTheme = {
     whiteSmoke: '#F2F2F2',
     eerieBlack: '#1B1A17',
     gray76: '#C2C2C2',
-    overlayBackground: '#FFFFFF50',
+    overlayBackground: '#00000050',
   },
 };
 

@@ -12,27 +12,34 @@ import SplashScreen from 'react-native-splash-screen';
 import appStyles from 'themes/appStyles';
 import AppNavigator from 'navigation/AppNavigator';
 import API from 'networkings/api';
-import StreamBotomSheet from 'components/BottomSheet';
+import MusicBotomSheet from 'components/MusicBotomSheet';
 import {useAppStore} from 'stores/appStore';
 import LoadingView from 'components/LoadingView';
 
 const queryClient = new QueryClient();
 const App = () => {
   const {loading} = useAppStore();
+  const [onboarding, setOnboarding] = React.useState(true);
+
   useEffect(() => {
+    SplashScreen.hide();
     (async () => {
       let hide = await API.initialize();
       if (hide) {
-        SplashScreen.hide();
+        setTimeout(() => {
+          setOnboarding(false);
+        }, 500);
       }
     })();
   });
-
+  if (onboarding) {
+    return <LoadingView />;
+  }
   return (
     <GestureHandlerRootView style={appStyles.flex}>
       <QueryClientProvider client={queryClient}>
         <AppNavigator />
-        <StreamBotomSheet />
+        <MusicBotomSheet />
         {loading && <LoadingView />}
       </QueryClientProvider>
     </GestureHandlerRootView>

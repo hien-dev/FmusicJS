@@ -16,6 +16,7 @@ import {Marquee} from '@animatereactnative/marquee';
 import {Constants} from 'utils/constants';
 import ListRenderer from 'components/ListRenderer';
 import {useVideoPlayer} from 'stores/videoStore';
+import {usePlaylist} from 'stores/playListStore';
 
 const generatePage = (array, chunkSize) => {
   let results = [];
@@ -30,6 +31,7 @@ const Albums = ({navigation, route}) => {
   const insets = useSafeAreaInsets();
   const {goBack} = useNavigationStore();
   const {setVideo} = useVideoPlayer();
+  const {setPlaylist} = usePlaylist();
   const {show, hide} = useAppStore();
   const params = route.params;
 
@@ -71,6 +73,8 @@ const Albums = ({navigation, route}) => {
     },
     onSuccess: res => {
       hide();
+      var video = res;
+      video.isAlbum = true;
       setVideo(res);
     },
     onError: err => {
@@ -129,9 +133,10 @@ const Albums = ({navigation, route}) => {
         onEndReachedThreshold={0.1}
         renderItem={({item, index}) => (
           <ListRenderer
-            isHome={false}
+            isAlbum
             item={item}
             onPress={value => {
+              setPlaylist({playlist: albums, isAlbum: true});
               mutationGetStream.mutate(value.videoId);
             }}
           />

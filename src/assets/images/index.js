@@ -21,6 +21,7 @@ const Assets = {
   arrowDown: require('./arrow_down.png'),
   play_circle: require('./play_circle.png'),
   pause_circle: require('./pause_circle.png'),
+  repeat: require('./repeat.png'),
 };
 
 export default Assets;

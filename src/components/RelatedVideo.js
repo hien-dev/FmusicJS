@@ -8,12 +8,11 @@ import {useTheme} from 'themes/index';
 import Text from 'components/Text';
 import {Constants} from 'utils/constants';
 
-const RelatedVideo = ({item, index, onPress}) => {
+const RelatedVideo = ({item, onPress}) => {
   const theme = useTheme();
 
   return (
     <TouchableOpacity
-      key={item?.videoId}
       style={styles.container}
       onPress={() => {
         onPress(item.id);

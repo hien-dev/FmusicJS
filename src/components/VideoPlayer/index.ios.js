@@ -1,19 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import Video from 'react-native-video';
-import Animated, {SlideInDown, SlideOutDown} from 'react-native-reanimated';
 import {StyleSheet, View} from 'react-native';
 import {useTheme} from 'themes/index';
-import appStyles from 'themes/appStyles';
 import {Constants} from 'utils/constants';
 import {useVideoPlayer} from 'stores/videoStore';
-import Text from 'components/Text';
-import {Slider} from '@miblanchard/react-native-slider';
-import {msToTime} from 'utils/timer';
+import SliderTime from 'components/VideoPlayer/sliderTime';
+import VideoAction from 'components/VideoPlayer/videoAction';
+import {useAppStore} from 'stores/appStore';
 
-const VideoPlayer = () => {
+const VideoPlayer = React.forwardRef(({}, videoRef) => {
   const theme = useTheme();
-  const videoRef = useRef(null);
   const {video, paused, setPaused} = useVideoPlayer();
+  const {repeat, setRepeat} = useAppStore();
   const [showNotiControls, setShowNotiControls] = useState(false);
   const [progress, setOnProgress] = useState({
     currentTime: 0,
@@ -29,6 +27,40 @@ const VideoPlayer = () => {
     };
   };
 
+  const onResume = async () => {
+    if (videoRef.current) {
+      await videoRef.current.resume();
+    }
+  };
+
+  const onPause = async () => {
+    if (videoRef.current) {
+      await videoRef.current.pause();
+    }
+  };
+
+  const onReplay = () => {
+    if (progress.currentTime < 10) {
+      onSeek(0);
+      return;
+    }
+    onSeek(progress.currentTime - 10);
+  };
+
+  const onForward = () => {
+    onSeek(progress.currentTime + 10);
+  };
+
+  const onSeek = value => {
+    if (videoRef.current) {
+      videoRef.current.seek(value);
+    }
+  };
+
+  const onRepeat = () => {
+    setRepeat(!repeat);
+  };
+
   return (
     <View style={[styles.videoContainer]}>
       <View style={[styles.videoContent, animationVideoContentStyle()]}>
@@ -37,7 +69,8 @@ const VideoPlayer = () => {
             ref={videoRef}
             source={video.sourceVideo}
             poster={video.poster.url}
-            paused={paused}
+            repeat={repeat}
+            paused={false}
             resizeMode={'cover'}
             posterResizeMode={'cover'}
             ignoreSilentSwitch={'ignore'}
@@ -54,15 +87,17 @@ const VideoPlayer = () => {
             }}
             onReadyForDisplay={() => {}}
             onProgress={e => setOnProgress(e)}
-            onPlaybackRateChange={e => {}}
+            onPlaybackRateChange={e => {
+              setPaused(e.playbackRate === 0);
+            }}
             onBuffer={e => {
               if (e.isBuffering) {
                 setShowNotiControls(true);
-                setPaused(false);
+                onResume();
               }
             }}
             onEnd={() => {
-              setPaused(true);
+              !repeat && onPause();
             }}
             onError={e => {
               console.log(`error: ${JSON.stringify(e)}`);
@@ -70,34 +105,25 @@ const VideoPlayer = () => {
           />
         )}
       </View>
-      <View>
-        <View style={styles.slider}>
-          <Text bold fontSize={appStyles.xxs} color={theme.primaryColors.white}>
-            {msToTime(progress.currentTime)}
-          </Text>
-          <Text bold fontSize={appStyles.xxs} color={theme.primaryColors.white}>
-            {msToTime(progress.seekableDuration)}
-          </Text>
-        </View>
-        <View style={appStyles.pHXL}>
-          <Slider
-            animationType={'timing'}
-            maximumValue={progress.seekableDuration}
-            trackStyle={styles.trackStyle}
-            thumbStyle={styles.thumbStyle}
-            minimumTrackTintColor={theme.primaryColors.white}
-            value={progress.currentTime}
-            onValueChange={value => {
-              if (videoRef.current && value[0] !== undefined) {
-                videoRef.current.seek(value[0]);
-              }
-            }}
-          />
-        </View>
-      </View>
+      <SliderTime
+        progress={progress}
+        onSlidingComplete={value => {
+          if (value[0] !== undefined) {
+            onSeek(value[0]);
+          }
+        }}
+      />
+      <VideoAction
+        paused={paused}
+        repeat={repeat}
+        onPaused={async () => (paused ? await onResume() : await onPause())}
+        onReplay={onReplay}
+        onForward={onForward}
+        onRepeat={onRepeat}
+      />
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   videoContainer: {
@@ -113,23 +139,6 @@ const styles = StyleSheet.create({
   video: {
     width: '99%',
     height: '98%',
-  },
-  slider: {
-    position: 'absolute',
-    bottom: 14,
-    ...appStyles.row,
-    ...appStyles.fullWidth,
-    ...appStyles.spaceBetween,
-    ...appStyles.pHXs,
-  },
-  thumbStyle: {
-    width: 5,
-    height: 0,
-  },
-  trackStyle: {
-    height: 6,
-    borderRadius: 6,
-    backgroundColor: '#A0A0A0',
   },
 });
 

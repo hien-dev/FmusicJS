@@ -5,7 +5,7 @@ import {
   parseSearchNextResponse,
   parseSearchResponse,
 } from 'networkings/responses/SearchResponse';
-import {parseAlbumsResponse} from './responses/AlbumsResponse';
+import {parseAlbumsResponse} from 'networkings/responses/AlbumsResponse';
 
 export default class API {
   static RequestBody = RequestBody;

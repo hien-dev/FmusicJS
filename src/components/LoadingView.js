@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     width: '50%',
-    height: 200,
+    height: 100,
   },
 });
 

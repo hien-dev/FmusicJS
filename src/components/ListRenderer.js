@@ -11,9 +11,9 @@ import {Constants} from 'utils/constants';
 import {parseAlbum} from 'networkings/responses/AlbumsResponse';
 
 const ListRenderer = memo(props => {
-  const {item, onPress, isHome = true} = props;
+  const {item, onPress, isAlbum = false} = props;
   const theme = useTheme();
-  let data = isHome ? parseSearch(item) : parseAlbum(item);
+  let data = isAlbum ? parseAlbum(item) : parseSearch(item);
   if (data.message) {
     return (
       <View style={styles.messageText}>

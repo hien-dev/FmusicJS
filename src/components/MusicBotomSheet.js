@@ -7,29 +7,30 @@ import {
   View,
 } from 'react-native';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import Text from 'components/Text';
-import appStyles from 'themes/appStyles';
-import {Constants, SCREEN_NAME} from 'utils/constants';
-import {useVideoPlayer} from 'stores/videoStore';
 import {Marquee} from '@animatereactnative/marquee';
+import {MaterialIcons} from 'components/VideoPlayer/videoAction';
+import VideoPlayer from 'components/VideoPlayer';
+import MusicListBottomSheet from 'components/MusicListBottomSheet';
+import Text from 'components/Text';
+import {useVideoPlayer} from 'stores/videoStore';
 import {useAppStore} from 'stores/appStore';
-import ImageIcons from './ImageIcons';
-import Assets from 'assets/images';
-import VideoPlayer from './VideoPlayer';
 import {useTheme} from 'themes/index';
-import {useAnimatedStyle, useSharedValue} from 'react-native-reanimated';
+import appStyles from 'themes/appStyles';
+import {Constants} from 'utils/constants';
 
 if (Constants.android && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const StreamBotomSheet = () => {
+const MusicBotomSheet = () => {
   const {paddingTop} = useAppStore();
   const theme = useTheme();
-  const {video, expandedVideo, setExpandedVideo, paused, setPaused} =
-    useVideoPlayer();
-  const rotateShareValue = useSharedValue(0);
+  const {video, expandedVideo, setExpandedVideo, paused} = useVideoPlayer();
+
   const sheetRef = useRef(null);
+  const musicListRef = useRef(null);
+  const videoRef = useRef(null);
+
   const bottomInset = useMemo(() => {
     if (video === undefined) {
       return -100;
@@ -39,10 +40,8 @@ const StreamBotomSheet = () => {
 
   useEffect(() => {
     if (sheetRef.current) {
-      rotateShareValue.value = expandedVideo ? 0 : 180;
       expandedVideo ? sheetRef.current.expand() : sheetRef.current.collapse();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expandedVideo]);
 
   const handleSheetChanges = index => {
@@ -60,15 +59,22 @@ const StreamBotomSheet = () => {
     setExpandedVideo(index !== 0);
   };
 
+  const onResume = async () => {
+    if (videoRef.current) {
+      await videoRef.current.resume();
+    }
+  };
+
+  const onPause = async () => {
+    if (videoRef.current) {
+      await videoRef.current.pause();
+    }
+  };
+
   const emptyView = () => (
     <View style={{backgroundColor: theme.colors.background}} />
   );
 
-  const rotateStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{rotate: `${rotateShareValue.value}deg`}],
-    };
-  });
   const handleComponent = () => (
     <TouchableOpacity
       activeOpacity={1}
@@ -82,10 +88,10 @@ const StreamBotomSheet = () => {
       ]}>
       <View
         style={[styles.iconLeft, {backgroundColor: theme.colors.background}]}>
-        <ImageIcons
-          source={Assets.arrowDown}
+        <MaterialIcons
+          name={expandedVideo ? 'arrow-circle-up' : 'arrow-circle-down'}
+          size={24}
           color={theme.colors.icon}
-          styles={rotateStyle}
         />
       </View>
       <>
@@ -109,14 +115,41 @@ const StreamBotomSheet = () => {
             styles.iconRight,
             {backgroundColor: theme.colors.background},
           ]}>
-          <ImageIcons
-            source={paused ? Assets.play_circle : Assets.pause_circle}
+          <MaterialIcons
+            name={paused ? 'play-circle-outline' : 'pause-circle-outline'}
+            size={24}
             color={theme.colors.icon}
-            onPress={() => setPaused(!paused)}
+            onPress={async () => (paused ? await onResume() : await onPause())}
           />
         </View>
       )}
     </TouchableOpacity>
+  );
+
+  const footerComponent = () => (
+    <View
+      style={[
+        styles.footerComponent,
+        appStyles.row,
+        appStyles.spaceEvenly,
+        appStyles.pBSm,
+        {backgroundColor: theme.colors.background},
+      ]}>
+      <MaterialIcons
+        name={'playlist-add'}
+        size={30}
+        color={theme.colors.icon}
+      />
+      <MaterialIcons
+        name={'playlist-play'}
+        size={30}
+        color={theme.colors.icon}
+        onPress={() => {
+          musicListRef.current.expand();
+        }}
+      />
+      <MaterialIcons name={'ios-share'} size={24} color={theme.colors.icon} />
+    </View>
   );
 
   return (
@@ -128,11 +161,17 @@ const StreamBotomSheet = () => {
       enableHandlePanningGesture={false}
       enableDynamicSizing={false}
       onChange={handleSheetChanges}
-      handleComponent={emptyView}>
+      handleComponent={emptyView}
+      footerComponent={emptyView}>
       <BottomSheetScrollView
-        contentContainerStyle={[{backgroundColor: theme.colors.background}]}>
+        contentContainerStyle={[
+          appStyles.full,
+          {backgroundColor: theme.colors.background},
+        ]}>
         {handleComponent()}
-        <VideoPlayer />
+        <VideoPlayer ref={videoRef} />
+        {footerComponent()}
+        <MusicListBottomSheet ref={musicListRef} />
       </BottomSheetScrollView>
     </BottomSheet>
   );
@@ -171,9 +210,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 1,
   },
+  footerComponent: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
   mT8: {
     marginTop: 8,
   },
 });
 
-export default StreamBotomSheet;
+export default MusicBotomSheet;
