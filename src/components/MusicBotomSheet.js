@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {Marquee} from '@animatereactnative/marquee';
-import {MaterialIcons} from 'components/VideoPlayer/videoAction';
+import {MaterialIcons} from 'components/VectorIcons';
 import VideoPlayer from 'components/VideoPlayer';
 import MusicListBottomSheet from 'components/MusicListBottomSheet';
 import Text from 'components/Text';

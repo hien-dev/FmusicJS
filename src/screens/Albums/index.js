@@ -6,8 +6,6 @@ import {useMutation} from '@tanstack/react-query';
 import API from 'networkings/api';
 import {useAppStore} from 'stores/appStore';
 import appStyles from 'themes/appStyles';
-import ImageIcons from 'components/ImageIcons';
-import Assets from 'assets/images';
 import {useTheme} from 'themes/index';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigationStore} from 'stores/navigationStore';
@@ -17,6 +15,7 @@ import {Constants} from 'utils/constants';
 import ListRenderer from 'components/ListRenderer';
 import {useVideoPlayer} from 'stores/videoStore';
 import {usePlaylist} from 'stores/playListStore';
+import {MaterialIcons} from 'components/VectorIcons';
 
 const generatePage = (array, chunkSize) => {
   let results = [];
@@ -98,8 +97,9 @@ const Albums = ({navigation, route}) => {
       <View style={[styles.topView, {borderColor: theme.colors.border}]}>
         <View
           style={[styles.iconLeft, {backgroundColor: theme.colors.background}]}>
-          <ImageIcons
-            source={Assets.arrowBack}
+          <MaterialIcons
+            name={'arrow-back-ios-new'}
+            size={24}
             color={theme.colors.icon}
             onPress={() => goBack()}
           />

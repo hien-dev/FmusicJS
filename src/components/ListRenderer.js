@@ -6,9 +6,9 @@ import appStyles from 'themes/appStyles';
 import Assets from 'assets/images';
 import {useTheme} from 'themes/index';
 import Text from 'components/Text';
-import ImageIcons from 'components/ImageIcons';
 import {Constants} from 'utils/constants';
 import {parseAlbum} from 'networkings/responses/AlbumsResponse';
+import {MaterialIcons} from './VectorIcons';
 
 const ListRenderer = memo(props => {
   const {item, onPress, isAlbum = false} = props;
@@ -38,9 +38,9 @@ const ListRenderer = memo(props => {
             resizeMode={'stretch'}
           />
           {data?.playlistId && (
-            <ImageIcons
-              source={Assets.playlist}
-              size={15}
+            <MaterialIcons
+              name={'playlist-play'}
+              size={24}
               color={theme.primaryColors.gray76}
               styles={styles.playlist}
             />
@@ -103,8 +103,8 @@ const styles = StyleSheet.create({
   },
   playlist: {
     position: 'absolute',
-    right: 3,
-    bottom: 3,
+    right: 0,
+    bottom: 0,
   },
   messageText: {
     ...appStyles.hCenter,

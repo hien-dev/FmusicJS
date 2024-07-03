@@ -2,18 +2,18 @@ import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {FlatList} from 'react-native-gesture-handler';
+import {useMutation} from '@tanstack/react-query';
+import ListRenderer from 'components/ListRenderer';
+import LoadingView from 'components/LoadingView';
 import Text from 'components/Text';
+import {MaterialIcons} from 'components/VectorIcons';
+import {usePlaylist} from 'stores/playListStore';
 import RelatedVideo from 'components/RelatedVideo';
 import {useVideoPlayer} from 'stores/videoStore';
+import {useAppStore} from 'stores/appStore';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
-import {useMutation} from '@tanstack/react-query';
 import API from 'networkings/api';
-import {useAppStore} from 'stores/appStore';
-import {MaterialIcons} from './VideoPlayer/videoAction';
-import {usePlaylist} from 'stores/playListStore';
-import ListRenderer from './ListRenderer';
-import LoadingView from './LoadingView';
 
 const MusicListBottomSheet = React.forwardRef(({}, ref) => {
   const theme = useTheme();

@@ -4,8 +4,6 @@ import {FlatList} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useMutation} from '@tanstack/react-query';
 import {isEmpty} from 'lodash';
-import Assets from 'assets/images';
-import ImageIcons from 'components/ImageIcons';
 import ListRenderer from 'components/ListRenderer';
 import API from 'networkings/api';
 import {useNavigationStore} from 'stores/navigationStore';
@@ -14,6 +12,7 @@ import {useAppStore} from 'stores/appStore';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
 import {Constants, SCREEN_NAME} from 'utils/constants';
+import {MaterialIcons} from 'components/VectorIcons';
 
 const Search = () => {
   const theme = useTheme();
@@ -71,8 +70,9 @@ const Search = () => {
   return (
     <View style={[styles.container, {paddingTop: insets.top}]}>
       <View style={[styles.topView, {borderColor: theme.colors.border}]}>
-        <ImageIcons
-          source={Assets.arrowBack}
+        <MaterialIcons
+          name={'arrow-back-ios-new'}
+          size={24}
           color={theme.colors.icon}
           onPress={() => goBack()}
         />

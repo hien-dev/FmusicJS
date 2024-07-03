@@ -9,11 +9,10 @@ import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
 import ListRenderer from 'components/ListRenderer';
 import {useVideoPlayer} from 'stores/videoStore';
-import ImageIcons from 'components/ImageIcons';
-import Assets from 'assets/images';
 import {useAppStore} from 'stores/appStore';
 import {useNavigationStore} from 'stores/navigationStore';
 import {SCREEN_NAME} from 'utils/constants';
+import {MaterialIcons} from 'components/VectorIcons';
 
 const Home = () => {
   const theme = useTheme();
@@ -65,8 +64,8 @@ const Home = () => {
         <Text bold fontSize={appStyles.md} color={theme.colors.text}>
           Fmusic
         </Text>
-        <ImageIcons
-          source={Assets.search}
+        <MaterialIcons
+          name={'search'}
           size={25}
           color={theme.colors.icon}
           onPress={() => {

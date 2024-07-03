@@ -1,25 +1,8 @@
 import React from 'react';
-import {TouchableOpacity, View} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Icon2 from 'react-native-vector-icons/AntDesign';
+import {View} from 'react-native';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
-
-const AntDesign = ({name, size = 50, color, onPress}) => {
-  return (
-    <TouchableOpacity disabled={!onPress} onPress={onPress}>
-      <Icon2 name={name} size={size} color={color} />
-    </TouchableOpacity>
-  );
-};
-
-export const MaterialIcons = ({name, size = 50, color, onPress}) => {
-  return (
-    <TouchableOpacity disabled={!onPress} onPress={onPress}>
-      <Icon name={name} size={size} color={color} />
-    </TouchableOpacity>
-  );
-};
+import {MaterialIcons, AntDesign} from 'components/VectorIcons';
 
 const VideoAction = ({
   paused,
