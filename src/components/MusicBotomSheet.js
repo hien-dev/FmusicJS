@@ -89,14 +89,14 @@ const MusicBotomSheet = () => {
       <View
         style={[styles.iconLeft, {backgroundColor: theme.colors.background}]}>
         <MaterialIcons
-          name={expandedVideo ? 'arrow-circle-up' : 'arrow-circle-down'}
+          name={expandedVideo ? 'arrow-circle-down' : 'arrow-circle-up'}
           size={24}
           color={theme.colors.icon}
         />
       </View>
       <>
         <Marquee spacing={120} speed={0.5}>
-          <Text color={theme.colors.text} fontSize={appStyles.xs} bold>
+          <Text fontSize={appStyles.xs} bold>
             {video?.videoDetail?.title}
           </Text>
         </Marquee>
@@ -136,11 +136,6 @@ const MusicBotomSheet = () => {
         {backgroundColor: theme.colors.background},
       ]}>
       <MaterialIcons
-        name={'playlist-add'}
-        size={30}
-        color={theme.colors.icon}
-      />
-      <MaterialIcons
         name={'playlist-play'}
         size={30}
         color={theme.colors.icon}
@@ -148,7 +143,16 @@ const MusicBotomSheet = () => {
           musicListRef.current.expand();
         }}
       />
-      <MaterialIcons name={'ios-share'} size={24} color={theme.colors.icon} />
+      <MaterialIcons
+        name={'podcasts'}
+        size={30}
+        color={theme.primaryColors.xMediumGrey}
+      />
+      <MaterialIcons
+        name={'ios-share'}
+        size={24}
+        color={theme.primaryColors.xMediumGrey}
+      />
     </View>
   );
 

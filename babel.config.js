@@ -9,8 +9,10 @@ module.exports = {
           // This has to be mirrored in tsconfig.json
           assets: './src/assets',
           components: './src/components',
+          hooks: './src/hooks',
           navigation: './src/navigation',
           networkings: './src/networkings',
+          realms: './src/realms',
           stores: './src/stores',
           screens: './src/screens',
           themes: './src/themes',

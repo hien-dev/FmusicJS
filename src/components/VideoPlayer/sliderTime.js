@@ -11,10 +11,10 @@ const SliderTime = ({progress, onSlidingComplete}) => {
   return (
     <View>
       <View style={styles.slider}>
-        <Text bold fontSize={appStyles.xxs} color={theme.colors.text}>
+        <Text bold fontSize={appStyles.xxs}>
           {msToTime(progress.currentTime)}
         </Text>
-        <Text bold fontSize={appStyles.xxs} color={theme.colors.text}>
+        <Text bold fontSize={appStyles.xxs}>
           {msToTime(progress.seekableDuration)}
         </Text>
       </View>

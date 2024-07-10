@@ -1,6 +1,7 @@
 import React from 'react';
 import {Animated} from 'react-native';
 import {FontFamily} from 'themes/fonts';
+import { useTheme } from 'themes/index';
 
 /**
  *
@@ -22,11 +23,13 @@ const Text = props => {
     bold,
     medium,
     fontSize = {fontSize: 13},
-    color = '#000000',
+    color,
     numberOfLines = 2,
     textAlign = 'auto',
     containerStyle,
   } = props;
+
+  const textColor = useTheme().colors.text;
 
   const getFont = () => {
     if (bold) {
@@ -44,7 +47,7 @@ const Text = props => {
       style={[
         {
           fontFamily: getFont(),
-          color: color,
+          color: color ?? textColor,
           textAlign: textAlign,
         },
         fontSize,

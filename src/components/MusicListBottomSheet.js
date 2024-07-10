@@ -47,7 +47,7 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
         size={24}
         color={theme.colors.icon}
       />
-      <Text fontSize={appStyles.sm} color={theme.colors.text} bold>
+      <Text fontSize={appStyles.sm} bold>
         PLAY LIST
       </Text>
       <View style={styles.size24} />

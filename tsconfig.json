@@ -7,8 +7,10 @@
       //We will have to add the same thing in babel.config.js
       "assets/*": ["src/assets/*"],
       "components/*": ["src/components/*"],
+      "hooks/*": ["src/hooks/*"],
       "navigation/*": ["src/navigation/*"],
       "networkings/*": ["src/networkings/*"],
+      "realms/*": ["src/realms/*"],
       "stores/*": ["src/stores/*"],
       "screens/*": ["src/screens/*"],
       "themes/*": ["src/themes/*"],

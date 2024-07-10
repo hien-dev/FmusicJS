@@ -24,10 +24,10 @@ const RelatedVideo = ({item, onPress}) => {
         resizeMode={'stretch'}
       />
       <View style={[styles.textView]}>
-        <Text medium fontSize={appStyles.xs} color={theme.colors.text}>
+        <Text medium fontSize={appStyles.xs}>
           {item?.title}
         </Text>
-        <Text fontSize={appStyles.xxs} color={theme.primaryColors.xMediumGrey}>
+        <Text fontSize={appStyles.xxs}>
           {`${item?.author?.name} • ${item?.published}`}
         </Text>
       </View>

@@ -106,12 +106,12 @@ const Albums = ({navigation, route}) => {
         </View>
         {sizeText ? (
           <Marquee spacing={120} speed={0.5}>
-            <Text color={theme.colors.text} fontSize={appStyles.sm} bold>
+            <Text fontSize={appStyles.sm} bold>
               {params.title}
             </Text>
           </Marquee>
         ) : (
-          <Text color={theme.colors.text} fontSize={appStyles.sm} bold>
+          <Text fontSize={appStyles.sm} bold>
             {params.title}
           </Text>
         )}

@@ -47,7 +47,7 @@ const ListRenderer = memo(props => {
           )}
         </View>
         <View style={[styles.textView]}>
-          <Text medium fontSize={appStyles.xs} color={theme.colors.text}>
+          <Text medium fontSize={appStyles.xs}>
             {data?.title}
           </Text>
           <Text

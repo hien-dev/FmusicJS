@@ -10,11 +10,12 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import SplashScreen from 'react-native-splash-screen';
 import appStyles from 'themes/appStyles';
-import AppNavigator from 'navigation/AppNavigator';
+import AppNavigator from 'navigation/appNavigator';
 import API from 'networkings/api';
 import MusicBotomSheet from 'components/MusicBotomSheet';
 import {useAppStore} from 'stores/appStore';
 import LoadingView from 'components/LoadingView';
+import RealmContext from 'realms/realm';
 
 const queryClient = new QueryClient();
 const App = () => {
@@ -38,9 +39,11 @@ const App = () => {
   return (
     <GestureHandlerRootView style={appStyles.flex}>
       <QueryClientProvider client={queryClient}>
-        <AppNavigator />
-        <MusicBotomSheet />
-        {loading && <LoadingView />}
+        <RealmContext.RealmProvider>
+          <AppNavigator />
+          <MusicBotomSheet />
+          {loading && <LoadingView />}
+        </RealmContext.RealmProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

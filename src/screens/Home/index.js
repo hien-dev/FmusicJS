@@ -3,7 +3,6 @@ import {StyleSheet, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {FlashList} from '@shopify/flash-list';
 import {useMutation, useQuery} from '@tanstack/react-query';
-import Text from 'components/Text';
 import API from 'networkings/api';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
@@ -12,7 +11,7 @@ import {useVideoPlayer} from 'stores/videoStore';
 import {useAppStore} from 'stores/appStore';
 import {useNavigationStore} from 'stores/navigationStore';
 import {SCREEN_NAME} from 'utils/constants';
-import {MaterialIcons} from 'components/VectorIcons';
+import Header from 'components/Header';
 
 const Home = () => {
   const theme = useTheme();
@@ -54,25 +53,13 @@ const Home = () => {
 
   return (
     <View style={[styles.container, {paddingTop: insets.top}]}>
-      <View
-        style={[
-          styles.height60,
-          appStyles.row,
-          appStyles.spaceBetween,
-          appStyles.hCenter,
-        ]}>
-        <Text bold fontSize={appStyles.md} color={theme.colors.text}>
-          Fmusic
-        </Text>
-        <MaterialIcons
-          name={'search'}
-          size={25}
-          color={theme.colors.icon}
-          onPress={() => {
-            navigate(SCREEN_NAME.SEARCH);
-          }}
-        />
-      </View>
+      <Header
+        title={'Fmusic'}
+        iconName={'search'}
+        onPress={() => {
+          navigate(SCREEN_NAME.SEARCH);
+        }}
+      />
       <FlashList
         showsVerticalScrollIndicator={false}
         data={data?.data ?? dataPlaceholderList}

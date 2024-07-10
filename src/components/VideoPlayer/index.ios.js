@@ -7,10 +7,12 @@ import {useVideoPlayer} from 'stores/videoStore';
 import SliderTime from 'components/VideoPlayer/sliderTime';
 import VideoAction from 'components/VideoPlayer/videoAction';
 import {useAppStore} from 'stores/appStore';
+import useVideoRealm from 'hooks/useVideoRealm';
 
 const VideoPlayer = React.forwardRef(({}, videoRef) => {
   const theme = useTheme();
   const {video, paused, setPaused} = useVideoPlayer();
+  const {isFavourite, addVideoRealm} = useVideoRealm();
   const {repeat, setRepeat} = useAppStore();
   const [showNotiControls, setShowNotiControls] = useState(false);
   const [progress, setOnProgress] = useState({
@@ -61,10 +63,14 @@ const VideoPlayer = React.forwardRef(({}, videoRef) => {
     setRepeat(!repeat);
   };
 
+  const onFavourite = () => {
+    addVideoRealm({video: video, favourite: true});
+  };
+
   return (
     <View style={[styles.videoContainer]}>
       <View style={[styles.videoContent, animationVideoContentStyle()]}>
-        {video && (
+        {video && video.sourceVideo && (
           <Video
             ref={videoRef}
             source={video.sourceVideo}
@@ -84,6 +90,7 @@ const VideoPlayer = React.forwardRef(({}, videoRef) => {
                 seekableDuration: 0,
               });
               setShowNotiControls(false);
+              addVideoRealm({video: video});
             }}
             onReadyForDisplay={() => {}}
             onProgress={e => setOnProgress(e)}
@@ -116,10 +123,12 @@ const VideoPlayer = React.forwardRef(({}, videoRef) => {
       <VideoAction
         paused={paused}
         repeat={repeat}
+        isFavourite={isFavourite(video)}
         onPaused={async () => (paused ? await onResume() : await onPause())}
         onReplay={onReplay}
         onForward={onForward}
         onRepeat={onRepeat}
+        onFavourite={onFavourite}
       />
     </View>
   );

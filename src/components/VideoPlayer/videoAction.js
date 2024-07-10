@@ -7,10 +7,12 @@ import {MaterialIcons, AntDesign} from 'components/VectorIcons';
 const VideoAction = ({
   paused,
   repeat,
+  isFavourite,
   onPaused,
   onReplay,
   onForward,
   onRepeat,
+  onFavourite,
 }) => {
   const theme = useTheme();
   const color = theme.colors.icon;
@@ -48,7 +50,8 @@ const VideoAction = ({
         <AntDesign
           name={'heart'}
           size={40}
-          color={false ? color : theme.primaryColors.xMediumGrey}
+          color={isFavourite ? color : theme.primaryColors.xMediumGrey}
+          onPress={onFavourite}
         />
       </View>
     </View>

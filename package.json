@@ -3,11 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "12": "react-native run-ios --udid 00008101-001165091140001E",
     "android": "react-native run-android",
     "ios": "react-native run-ios --udid BB8EFB30-1E13-4D27-ADDF-A72A3E6C1E79",
     "io": "react-native run-ios --udid 3BF68A7D-81FE-492A-B6A6-1902B690E5DD",
     "xr": "react-native run-ios --udid 00008020-000D28203C82002E",
-    "12": "react-native run-ios --udid 00008101-001165091140001E",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
@@ -22,6 +22,7 @@
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
+    "@realm/react": "^0.8.0",
     "@shopify/flash-list": "^1.6.4",
     "@tanstack/react-query": "^5.44.0",
     "@ytdl-core": "git+ssh://git@github.com:hien-dev/ytdl-core.git",
@@ -42,6 +43,7 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-vector-icons": "^10.1.0",
     "react-native-video": "^6.1.0",
+    "realm": "^12.11.1",
     "whatwg-url-without-unicode": "^8.0.0-3",
     "zustand": "^4.5.2"
   },
