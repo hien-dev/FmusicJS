@@ -1,17 +1,11 @@
 import {useCallback, useMemo} from 'react';
 import RealmContext from 'realms/realm';
 import VideoRealm from 'realms/videoRealm';
-
-const parseVideo = video => {
-  return {
-    videoId: video?.videoDetail?.videoId,
-    title: video?.videoDetail?.title,
-    thumbnail: video?.poster?.url,
-  };
-};
+import {useVideoState} from 'hooks/useVideoPlayer';
 
 const useVideoRealm = () => {
   const {useRealm, useQuery} = RealmContext;
+  const videoState = useVideoState();
   const realm = useRealm();
 
   const recentlyPlayed = useQuery({
@@ -33,38 +27,46 @@ const useVideoRealm = () => {
     return (recentlyPlayed.filter(i => i.favourite) || []).slice(0, 5);
   }, [recentlyPlayed]);
 
-  const isFavourite = useCallback(
-    video => {
-      if (video && realm) {
-        let pVideo = parseVideo(video);
-        let existVideo = realm.objectForPrimaryKey(VideoRealm, pVideo.videoId);
-        if (existVideo?.favourite) {
-          return true;
-        }
-      }
-      return false;
-    },
-    [realm],
-  );
+  const isFavourite = useCallback(() => {
+    if (videoState && videoState.videoId && realm) {
+      let existVideo = realm.objectForPrimaryKey(
+        VideoRealm,
+        videoState.videoId,
+      );
+      return existVideo?.favourite;
+    }
+    return false;
+  }, [realm, videoState]);
 
-  const addVideoRealm = useCallback(
-    ({video, favourite = false}) => {
-      if (video && realm) {
-        let pVideo = parseVideo(video);
-        let existVideo = realm.objectForPrimaryKey(VideoRealm, pVideo.videoId);
+  const updateFavourite = useCallback(() => {
+    if (videoState && videoState.videoId && realm) {
+      let existVideo = realm.objectForPrimaryKey(
+        VideoRealm,
+        videoState.videoId,
+      );
+      if (existVideo) {
         realm.write(() => {
-          if (existVideo) {
-            if (favourite) {
-              existVideo.favourite = !existVideo.favourite;
-            }
-          } else {
-            realm.create(VideoRealm, pVideo);
-          }
+          existVideo.favourite = !existVideo.favourite;
         });
       }
-    },
-    [realm],
-  );
+    }
+  }, [realm, videoState]);
+
+  const saveVideoRealm = useCallback(() => {
+    if (videoState && realm) {
+      const {videoId, title, poster} = videoState;
+      let existVideo = realm.objectForPrimaryKey(VideoRealm, videoId);
+      if (!existVideo) {
+        realm.write(() => {
+          realm.create(VideoRealm, {
+            videoId: videoId,
+            title: title,
+            poster: poster,
+          });
+        });
+      }
+    }
+  }, [realm, videoState]);
 
   const deleteCache = useCallback(() => {
     realm.write(() => {
@@ -78,7 +80,8 @@ const useVideoRealm = () => {
     favouritePlayed,
     favouritePlayed5,
     isFavourite,
-    addVideoRealm,
+    updateFavourite,
+    saveVideoRealm,
     deleteCache,
   };
 };

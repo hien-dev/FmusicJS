@@ -2,24 +2,22 @@ import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {FlatList} from 'react-native-gesture-handler';
-import {useMutation} from '@tanstack/react-query';
 import ListRenderer from 'components/ListRenderer';
 import LoadingView from 'components/LoadingView';
 import Text from 'components/Text';
 import {MaterialIcons} from 'components/VectorIcons';
 import {usePlaylist} from 'stores/playListStore';
 import RelatedVideo from 'components/RelatedVideo';
-import {useVideoPlayer} from 'stores/videoStore';
+
 import {useAppStore} from 'stores/appStore';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
-import API from 'networkings/api';
+import useVideoPlayer from 'hooks/useVideoPlayer';
 
 const MusicListBottomSheet = React.forwardRef(({}, ref) => {
   const theme = useTheme();
-  const {setVideo} = useVideoPlayer();
+  const {getVideo} = useVideoPlayer();
   const {playlist, isAlbum} = usePlaylist();
-  const {show, hide} = useAppStore();
   const [showPlaylist, setShowPlaylist] = useState(false);
 
   const emptyView = () => (
@@ -42,11 +40,7 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
           borderColor: theme.colors.border,
         },
       ]}>
-      <MaterialIcons
-        name={'arrow-circle-down'}
-        size={24}
-        color={theme.colors.icon}
-      />
+      <MaterialIcons name={'arrow-circle-down'} size={24} />
       <Text fontSize={appStyles.sm} bold>
         PLAY LIST
       </Text>
@@ -58,24 +52,6 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
     setShowPlaylist(false);
     ref.current.close();
   };
-
-  const mutationGetStream = useMutation({
-    mutationFn: videoId => {
-      show();
-      return API.getStream(videoId);
-    },
-    onSuccess: res => {
-      hide();
-      onClose();
-      var video = res;
-      video.isAlbum = isAlbum;
-      setVideo(res);
-    },
-    onError: err => {
-      hide();
-      console.log('error', err);
-    },
-  });
 
   return (
     <BottomSheet
@@ -109,8 +85,8 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
                     key={item.videoId}
                     isAlbum={isAlbum}
                     item={item}
-                    onPress={value => {
-                      mutationGetStream.mutate(value.videoId);
+                    onPress={async value => {
+                      await getVideo(value.videoId);
                     }}
                   />
                 );
@@ -119,8 +95,8 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
                 <RelatedVideo
                   key={item.id}
                   item={item}
-                  onPress={value => {
-                    mutationGetStream.mutate(value);
+                  onPress={async value => {
+                    await getVideo(value);
                   }}
                 />
               );

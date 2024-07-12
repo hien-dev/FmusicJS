@@ -12,37 +12,39 @@ import {MaterialIcons} from 'components/VectorIcons';
 import VideoPlayer from 'components/VideoPlayer';
 import MusicListBottomSheet from 'components/MusicListBottomSheet';
 import Text from 'components/Text';
-import {useVideoPlayer} from 'stores/videoStore';
+import {useVideoState} from 'hooks/useVideoPlayer';
 import {useAppStore} from 'stores/appStore';
 import {useTheme} from 'themes/index';
 import appStyles from 'themes/appStyles';
 import {Constants} from 'utils/constants';
+import useSafeArea from 'hooks/useSafeAreaInsets';
 
 if (Constants.android && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 const MusicBotomSheet = () => {
-  const {paddingTop} = useAppStore();
+  const {insets} = useSafeArea();
   const theme = useTheme();
-  const {video, expandedVideo, setExpandedVideo, paused} = useVideoPlayer();
+  const {paused, title, author, source, expanded, setExpanded} =
+    useVideoState();
 
   const sheetRef = useRef(null);
   const musicListRef = useRef(null);
   const videoRef = useRef(null);
 
   const bottomInset = useMemo(() => {
-    if (video === undefined) {
+    if (source === undefined) {
       return -100;
     }
     return Constants.android ? 49 : 79;
-  }, [video]);
+  }, [source]);
 
   useEffect(() => {
     if (sheetRef.current) {
-      expandedVideo ? sheetRef.current.expand() : sheetRef.current.collapse();
+      expanded ? sheetRef.current.expand() : sheetRef.current.collapse();
     }
-  }, [expandedVideo]);
+  }, [expanded]);
 
   const handleSheetChanges = index => {
     LayoutAnimation.configureNext({
@@ -56,7 +58,7 @@ const MusicBotomSheet = () => {
         springDamping: 1,
       },
     });
-    setExpandedVideo(index !== 0);
+    setExpanded(index !== 0);
   };
 
   const onResume = async () => {
@@ -78,7 +80,7 @@ const MusicBotomSheet = () => {
   const handleComponent = () => (
     <TouchableOpacity
       activeOpacity={1}
-      onPress={() => setExpandedVideo(!expandedVideo)}
+      onPress={() => setExpanded(!expanded)}
       style={[
         styles.handleComponent,
         {
@@ -89,15 +91,14 @@ const MusicBotomSheet = () => {
       <View
         style={[styles.iconLeft, {backgroundColor: theme.colors.background}]}>
         <MaterialIcons
-          name={expandedVideo ? 'arrow-circle-down' : 'arrow-circle-up'}
+          name={expanded ? 'arrow-circle-down' : 'arrow-circle-up'}
           size={24}
-          color={theme.colors.icon}
         />
       </View>
       <>
         <Marquee spacing={120} speed={0.5}>
           <Text fontSize={appStyles.xs} bold>
-            {video?.videoDetail?.title}
+            {title}
           </Text>
         </Marquee>
         <Text
@@ -106,10 +107,10 @@ const MusicBotomSheet = () => {
           medium
           textAlign={'center'}
           containerStyle={styles.mT8}>
-          {video?.author}
+          {author}
         </Text>
       </>
-      {!expandedVideo && (
+      {!expanded && (
         <View
           style={[
             styles.iconRight,
@@ -118,7 +119,6 @@ const MusicBotomSheet = () => {
           <MaterialIcons
             name={paused ? 'play-circle-outline' : 'pause-circle-outline'}
             size={24}
-            color={theme.colors.icon}
             onPress={async () => (paused ? await onResume() : await onPause())}
           />
         </View>
@@ -138,7 +138,6 @@ const MusicBotomSheet = () => {
       <MaterialIcons
         name={'playlist-play'}
         size={30}
-        color={theme.colors.icon}
         onPress={() => {
           musicListRef.current.expand();
         }}
@@ -159,7 +158,8 @@ const MusicBotomSheet = () => {
   return (
     <BottomSheet
       ref={sheetRef}
-      topInset={paddingTop}
+      // topInset={insets?.top ?? 0}
+      topInset={0}
       bottomInset={bottomInset}
       snapPoints={[70, '100%']}
       enableHandlePanningGesture={false}

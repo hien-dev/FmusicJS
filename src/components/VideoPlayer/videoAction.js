@@ -25,14 +25,13 @@ const VideoAction = ({
           appStyles.hCenter,
           appStyles.mVSm,
         ]}>
-        <MaterialIcons name={'replay-10'} color={color} onPress={onReplay} />
+        <MaterialIcons name={'replay-10'} onPress={onReplay} />
         <MaterialIcons
           name={paused ? 'play-circle-outline' : 'pause-circle-outline'}
           size={100}
-          color={color}
           onPress={onPaused}
         />
-        <MaterialIcons name={'forward-10'} color={color} onPress={onForward} />
+        <MaterialIcons name={'forward-10'} onPress={onForward} />
       </View>
       <View
         style={[

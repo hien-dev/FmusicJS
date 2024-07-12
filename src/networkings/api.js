@@ -1,75 +1,73 @@
 import axios from 'axios';
 import ytdl from '@ytdl-core';
-import RequestBody from 'networkings/requests/RequestBody';
 import {
   parseSearchNextResponse,
   parseSearchResponse,
 } from 'networkings/responses/SearchResponse';
 import {parseAlbumsResponse} from 'networkings/responses/AlbumsResponse';
+import useNetworking from 'hooks/useNetworking';
 
-export default class API {
-  static RequestBody = RequestBody;
-  static URL = class URL {
-    static Main = 'https://www.youtube.com/';
-    static #Endpoint = 'youtubei/v1/';
-    static #Key = '&key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
-    static #PrettyPrint = '?prettyPrint=false';
+const RequestBody = {
+  context: {
+    client: {
+      visitorData: 'Cgstc2ZpcWQtQ0FBYyjQz6KzBjIKCgJKUBIEGgAgIA%3D%3D',
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36,gzip(gfe)',
+      clientName: 'WEB',
+      clientVersion: '2.20240216.03.00',
+    },
+  },
+};
 
-    static #SwJS = 'sw.js_data';
-    static #Search = 'search';
-    static #Next = 'next';
+const Main = 'https://www.youtube.com/';
+const Endpoint = 'youtubei/v1/';
+const Key = '&key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
+const PrettyPrint = '?prettyPrint=false';
 
-    static SwJSdata = this.Main + this.#SwJS;
-    static Search =
-      this.Main + this.#Endpoint + this.#Search + this.#PrettyPrint + this.#Key;
-    static Next =
-      this.Main + this.#Endpoint + this.#Next + this.#PrettyPrint + this.#Key;
-  };
+const URL = {
+  SwJSdata: Main + 'sw.js_data',
+  Search: Main + Endpoint + 'search' + PrettyPrint + Key,
+  Next: Main + Endpoint + 'next' + PrettyPrint + Key,
+};
 
-  static initRequestHeader;
-  static async initialize() {
-    let res = await axios.get(this.URL.SwJSdata);
-    if (res.headers) {
-      this.initRequestHeader = res.headers;
-    }
+export const initRequestHeader = async () => {
+  const setRequestHeader = useNetworking.getState().setRequestHeader;
+  let res = await axios.get(URL.SwJSdata);
+  if (res.headers) {
+    setRequestHeader(res.headers);
     return true;
   }
+};
 
-  /**
-   * @returns {parseSearchResponse}
-   */
-  static async getSearchResults({
-    query = 'H20 remix',
-    continuation = undefined,
-  }) {
-    let body = Object.assign({}, API.RequestBody.DEFAULT);
-    if (continuation) {
-      body.continuation = continuation;
-    } else {
-      body.query = query;
-    }
-    let headers = this.initRequestHeader || {};
-    let response = await axios.post(this.URL.Search, body, {
-      headers: JSON.parse(JSON.stringify(headers)),
-    });
-    return continuation
-      ? parseSearchNextResponse(response)
-      : parseSearchResponse(response);
-  }
+export const getSearchResults = async ({
+  query = 'H20 remix',
+  continuation = undefined,
+}) => {
+  const params = continuation ? {continuation: continuation} : {query: query};
+  let body = Object.assign(params, RequestBody);
+  let headers = useNetworking.getState().requestHeader ?? {};
 
-  static async getAlbums({videoId, playlistId}) {
-    let body = Object.assign({}, API.RequestBody.DEFAULT);
-    body.videoId = videoId;
-    body.playlistId = playlistId;
-    let headers = this.initRequestHeader || {};
-    let response = await axios.post(this.URL.Next, body, {
-      headers: JSON.parse(JSON.stringify(headers)),
-    });
-    return parseAlbumsResponse(response);
-  }
+  let response = await axios.post(URL.Search, body, {
+    headers: JSON.parse(JSON.stringify(headers)),
+  });
 
-  static async getStream(videoId) {
-    let url = `${this.URL.Main}watch?v=${videoId}`;
-    return await ytdl.getInfo(url);
-  }
-}
+  return continuation
+    ? parseSearchNextResponse(response)
+    : parseSearchResponse(response);
+};
+
+export const getAlbums = async ({videoId, playlistId}) => {
+  const params = {videoId: videoId, playlistId: playlistId};
+  let body = Object.assign(params, RequestBody);
+
+  let headers = useNetworking.getState().requestHeader;
+  let response = await axios.post(URL.Next, body, {
+    headers: JSON.parse(JSON.stringify(headers)),
+  });
+  return parseAlbumsResponse(response);
+};
+
+export const getVideoInfo = async videoId => {
+  let url = `${Main}watch?v=${videoId}`;
+  return await ytdl.getInfo(url);
+};

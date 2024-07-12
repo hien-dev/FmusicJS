@@ -4,7 +4,7 @@ import SearchRealm from 'realms/searchRealm';
 
 const RealmContext = createRealmContext({
   schema: [VideoRealm, SearchRealm],
-  schemaVersion: 1,
+  schemaVersion: 2,
 });
 
 export default RealmContext;

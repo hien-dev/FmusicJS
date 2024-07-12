@@ -4,27 +4,27 @@ export const parseVideo = res => {
   if (!res) {
     return undefined;
   }
-  let videoDetail = get(res, 'videoDetails', undefined);
-  let streamingData = head(
-    get(res, 'player_response.streamingData.formats', []),
-  );
+  let detail = get(res, 'videoDetails', undefined);
+  let streaming = head(get(res, 'player_response.streamingData.formats', []));
   let poster = {
-    url: last(videoDetail.thumbnails)?.url,
-    width: streamingData?.width,
-    height: streamingData?.height,
+    url: last(detail.thumbnails)?.url,
+    width: streaming?.width,
+    height: streaming?.height,
   };
-  let sourceVideo = {
-    uri: streamingData?.url,
+  let source = {
+    uri: streaming?.url,
     metadata: {
-      title: videoDetail?.title,
+      title: detail?.title,
       imageUri: poster?.url,
     },
   };
+
   return {
-    sourceVideo,
-    videoDetail,
+    videoId: detail?.videoId,
+    source,
+    title: detail?.title,
     relatedVideos: get(res, 'related_videos', []),
     poster,
-    author: videoDetail?.author?.name,
+    author: detail?.author?.name,
   };
 };

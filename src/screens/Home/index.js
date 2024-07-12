@@ -2,57 +2,36 @@ import React, {useEffect, useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {FlashList} from '@shopify/flash-list';
-import {useMutation, useQuery} from '@tanstack/react-query';
-import API from 'networkings/api';
 import appStyles from 'themes/appStyles';
-import {useTheme} from 'themes/index';
 import ListRenderer from 'components/ListRenderer';
-import {useVideoPlayer} from 'stores/videoStore';
-import {useAppStore} from 'stores/appStore';
+import useVideoPlayer from 'hooks/useVideoPlayer';
 import {useNavigationStore} from 'stores/navigationStore';
 import {SCREEN_NAME} from 'utils/constants';
 import Header from 'components/Header';
+import useSafeArea from 'hooks/useSafeAreaInsets';
+import useHome from 'hooks/useHome';
 
 const Home = () => {
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const areaInsets = useSafeAreaInsets();
   const {navigate} = useNavigationStore();
-  const {setVideo} = useVideoPlayer();
-  const {show, hide, paddingTop, setPaddingTop} = useAppStore();
+  const {insets, setInsets, paddingTop} = useSafeArea();
 
-  const {data} = useQuery({
-    queryKey: ['Home-List'],
-    queryFn: () => API.getSearchResults({}),
-  });
+  const {data} = useHome();
+  const {getVideo} = useVideoPlayer();
 
   const dataPlaceholderList = useMemo(() => {
     return Array.from({length: 15}).map(_ => null);
   }, []);
 
-  const mutationGetStream = useMutation({
-    mutationFn: videoId => {
-      show();
-      return API.getStream(videoId);
-    },
-    onSuccess: res => {
-      hide();
-      setVideo(res);
-    },
-    onError: err => {
-      hide();
-      console.log('error', err);
-    },
-  });
-
   useEffect(() => {
-    if (!paddingTop) {
-      setPaddingTop(insets.top);
+    if (!insets) {
+      setInsets(areaInsets);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paddingTop]);
+  }, [insets]);
 
   return (
-    <View style={[styles.container, {paddingTop: insets.top}]}>
+    <View style={[styles.container, paddingTop()]}>
       <Header
         title={'Fmusic'}
         iconName={'search'}
@@ -77,7 +56,7 @@ const Home = () => {
                 });
                 return;
               }
-              mutationGetStream.mutate(value.videoId);
+              getVideo(value.videoId);
             }}
           />
         )}

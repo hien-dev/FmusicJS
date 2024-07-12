@@ -1,79 +1,64 @@
 import React, {useRef, useState} from 'react';
 import {ActivityIndicator, StyleSheet, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useMutation} from '@tanstack/react-query';
 import {isEmpty} from 'lodash';
 import ListRenderer from 'components/ListRenderer';
-import API from 'networkings/api';
+import {getSearchResults} from 'networkings/api';
 import {useNavigationStore} from 'stores/navigationStore';
-import {useVideoPlayer} from 'stores/videoStore';
-import {useAppStore} from 'stores/appStore';
+import useVideoPlayer from 'hooks/useVideoPlayer';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
 import {Constants, SCREEN_NAME} from 'utils/constants';
 import {MaterialIcons} from 'components/VectorIcons';
+import useSafeArea from 'hooks/useSafeAreaInsets';
+import useNetworking from 'hooks/useNetworking';
 
-const Search = () => {
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
-  const {setVideo} = useVideoPlayer();
-  const {goBack, navigate} = useNavigationStore();
-  const {show, hide} = useAppStore();
-  const ref = useRef(null);
+const useSearch = () => {
   const [videos, setVideos] = useState([]);
-  const [searchText, setSearchText] = useState('');
+  const {setLoading} = useNetworking();
   const [continuation, setContinuation] = useState(undefined);
 
-  const mutationGetSearch = useMutation({
-    mutationFn: query => {
-      show();
-      return API.getSearchResults({query});
-    },
-    onSuccess: res => {
-      hide();
-      if (ref) {
-        ref.current?.scrollToOffset(0);
-      }
-      setVideos(res?.data ?? []);
+  const onFetch = async query => {
+    setLoading(true);
+    try {
+      let res = await getSearchResults({query});
+      setVideos(res.data);
       setContinuation(res?.continuation);
-    },
-    onError: err => {
-      hide();
-      console.log('error', err);
-    },
-  });
+      setLoading(false);
+    } catch (error) {
+      console.log(`[error] onFetch: ${JSON.stringify(error)}`);
+      setLoading(false);
+    }
+  };
 
-  const mutationNextSearch = useMutation({
-    mutationFn: value => API.getSearchResults({query: '', continuation: value}),
-    onSuccess: res => {
+  const onNext = async () => {
+    try {
+      let res = await getSearchResults({query: '', continuation: continuation});
       setVideos(videos.concat(res?.data ?? []));
       setContinuation(res?.continuation);
-    },
-  });
+    } catch (error) {
+      console.log(`[error] onNext: ${JSON.stringify(error)}`);
+    }
+  };
 
-  const mutationGetStream = useMutation({
-    mutationFn: videoId => {
-      show();
-      return API.getStream(videoId);
-    },
-    onSuccess: res => {
-      hide();
-      setVideo(res);
-    },
-    onError: err => {
-      hide();
-      console.log('error', err);
-    },
-  });
+  return {videos, onFetch, onNext};
+};
+
+const Search = () => {
+  const ref = useRef(null);
+  const theme = useTheme();
+  const {videos, onFetch, onNext} = useSearch();
+  const {paddingTop} = useSafeArea();
+  const {getVideo} = useVideoPlayer();
+  const {goBack, navigate} = useNavigationStore();
+  const [searchText, setSearchText] = useState('');
 
   return (
-    <View style={[styles.container, {paddingTop: insets.top}]}>
+    <View style={[styles.container, paddingTop()]}>
       <View style={[styles.topView, {borderColor: theme.colors.border}]}>
         <MaterialIcons
           name={'arrow-back-ios-new'}
           size={24}
-          color={theme.colors.icon}
           onPress={() => goBack()}
         />
         <View style={styles.inputView}>
@@ -83,9 +68,9 @@ const Search = () => {
             placeholderTextColor={theme.primaryColors.gray76}
             onChangeText={value => setSearchText(value)}
             returnKeyType="search"
-            onSubmitEditing={() => {
+            onSubmitEditing={async () => {
               if (!isEmpty(searchText)) {
-                mutationGetSearch.mutate(searchText);
+                await onFetch(searchText);
               }
             }}
             style={[
@@ -104,16 +89,14 @@ const Search = () => {
           data={videos}
           estimatedItemSize={30}
           onEndReached={() => {
-            if (!isEmpty(continuation)) {
-              mutationNextSearch.mutate(continuation);
-            }
+            onNext();
           }}
           onEndReachedThreshold={0.1}
           renderItem={({item, index}) => (
             <ListRenderer
               item={item}
               index={index}
-              onPress={value => {
+              onPress={async value => {
                 if (value?.playlistId) {
                   navigate(SCREEN_NAME.ALBUMS, {
                     videoId: value?.videoId,
@@ -122,15 +105,13 @@ const Search = () => {
                   });
                   return;
                 }
-                mutationGetStream.mutate(value.videoId);
+                await getVideo(value.videoId);
               }}
             />
           )}
           ListFooterComponent={
             <View style={styles.listFooter}>
-              {mutationNextSearch.isPending && (
-                <ActivityIndicator size={'large'} color={theme.colors.icon} />
-              )}
+              <ActivityIndicator size={'large'} color={theme.colors.icon} />
             </View>
           }
         />

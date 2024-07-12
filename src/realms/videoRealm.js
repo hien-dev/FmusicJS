@@ -6,7 +6,7 @@ export default class VideoRealm extends Realm.Object {
     properties: {
       videoId: 'string',
       title: 'string',
-      thumbnail: 'string',
+      poster: 'mixed',
       favourite: {type: 'bool', default: false},
       createDate: {type: 'date', default: new Date()},
     },

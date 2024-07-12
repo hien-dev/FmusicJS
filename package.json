@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "11": "react-native run-ios --udid 00008030-000A69420A09802E",
     "12": "react-native run-ios --udid 00008101-001165091140001E",
     "android": "react-native run-android",
     "ios": "react-native run-ios --udid BB8EFB30-1E13-4D27-ADDF-A72A3E6C1E79",

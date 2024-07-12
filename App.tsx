@@ -11,25 +11,23 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import SplashScreen from 'react-native-splash-screen';
 import appStyles from 'themes/appStyles';
 import AppNavigator from 'navigation/appNavigator';
-import API from 'networkings/api';
+import {initRequestHeader} from 'networkings/api';
 import MusicBotomSheet from 'components/MusicBotomSheet';
-import {useAppStore} from 'stores/appStore';
 import LoadingView from 'components/LoadingView';
 import RealmContext from 'realms/realm';
+import useNetworking from 'hooks/useNetworking';
 
 const queryClient = new QueryClient();
 const App = () => {
-  const {loading} = useAppStore();
+  const {loading} = useNetworking();
   const [onboarding, setOnboarding] = React.useState(true);
 
   useEffect(() => {
     SplashScreen.hide();
     (async () => {
-      let hide = await API.initialize();
+      let hide = await initRequestHeader();
       if (hide) {
-        setTimeout(() => {
-          setOnboarding(false);
-        }, 500);
+        setOnboarding(false);
       }
     })();
   });

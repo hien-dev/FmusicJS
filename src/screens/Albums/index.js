@@ -7,15 +7,15 @@ import API from 'networkings/api';
 import {useAppStore} from 'stores/appStore';
 import appStyles from 'themes/appStyles';
 import {useTheme} from 'themes/index';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigationStore} from 'stores/navigationStore';
 import Text from 'components/Text';
 import {Marquee} from '@animatereactnative/marquee';
 import {Constants} from 'utils/constants';
 import ListRenderer from 'components/ListRenderer';
-import {useVideoPlayer} from 'stores/videoStore';
+import useVideoPlayer from 'hooks/useVideoPlayer';
 import {usePlaylist} from 'stores/playListStore';
 import {MaterialIcons} from 'components/VectorIcons';
+import useSafeArea from 'hooks/useSafeAreaInsets';
 
 const generatePage = (array, chunkSize) => {
   let results = [];
@@ -27,9 +27,9 @@ const generatePage = (array, chunkSize) => {
 
 const Albums = ({navigation, route}) => {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const {paddingTop} = useSafeArea();
   const {goBack} = useNavigationStore();
-  const {setVideo} = useVideoPlayer();
+  const {getVideo} = useVideoPlayer();
   const {setPlaylist} = usePlaylist();
   const {show, hide} = useAppStore();
   const params = route.params;
@@ -93,14 +93,13 @@ const Albums = ({navigation, route}) => {
   }, [params.playlistId, params.videoId]);
 
   return (
-    <View style={[styles.container, {paddingTop: insets.top}]}>
+    <View style={[styles.container, paddingTop()]}>
       <View style={[styles.topView, {borderColor: theme.colors.border}]}>
         <View
           style={[styles.iconLeft, {backgroundColor: theme.colors.background}]}>
           <MaterialIcons
             name={'arrow-back-ios-new'}
             size={24}
-            color={theme.colors.icon}
             onPress={() => goBack()}
           />
         </View>
@@ -135,9 +134,9 @@ const Albums = ({navigation, route}) => {
           <ListRenderer
             isAlbum
             item={item}
-            onPress={value => {
+            onPress={async value => {
               setPlaylist({playlist: albums, isAlbum: true});
-              mutationGetStream.mutate(value.videoId);
+              await getVideo(value.videoId);
             }}
           />
         )}
