@@ -2,10 +2,10 @@ import React, {useEffect, useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {FlashList} from '@shopify/flash-list';
-import appStyles from 'themes/appStyles';
+import appStyles from 'utils/appStyles';
 import ListRenderer from 'components/ListRenderer';
 import useVideoPlayer from 'hooks/useVideoPlayer';
-import {useNavigationStore} from 'stores/navigationStore';
+import useNavigationState from 'hooks/useNavigationState';
 import {SCREEN_NAME} from 'utils/constants';
 import Header from 'components/Header';
 import useSafeArea from 'hooks/useSafeAreaInsets';
@@ -13,7 +13,7 @@ import useHome from 'hooks/useHome';
 
 const Home = () => {
   const areaInsets = useSafeAreaInsets();
-  const {navigate} = useNavigationStore();
+  const {navigate} = useNavigationState();
   const {insets, setInsets, paddingTop} = useSafeArea();
 
   const {data} = useHome();

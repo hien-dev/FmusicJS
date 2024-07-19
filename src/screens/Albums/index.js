@@ -1,43 +1,25 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {head} from 'lodash';
-import {useMutation} from '@tanstack/react-query';
-import API from 'networkings/api';
-import {useAppStore} from 'stores/appStore';
-import appStyles from 'themes/appStyles';
-import {useTheme} from 'themes/index';
-import {useNavigationStore} from 'stores/navigationStore';
+import appStyles from 'utils/appStyles';
+import useTheme from 'hooks/useTheme';
 import Text from 'components/Text';
 import {Marquee} from '@animatereactnative/marquee';
 import {Constants} from 'utils/constants';
 import ListRenderer from 'components/ListRenderer';
 import useVideoPlayer from 'hooks/useVideoPlayer';
-import {usePlaylist} from 'stores/playListStore';
 import {MaterialIcons} from 'components/VectorIcons';
 import useSafeArea from 'hooks/useSafeAreaInsets';
-
-const generatePage = (array, chunkSize) => {
-  let results = [];
-  for (let i = 0; i < array.length; i += chunkSize) {
-    results.push(array.slice(i, i + chunkSize));
-  }
-  return results;
-};
+import useAlbum from 'hooks/useAlbum';
+import useNavigationState from 'hooks/useNavigationState';
 
 const Albums = ({navigation, route}) => {
   const theme = useTheme();
   const {paddingTop} = useSafeArea();
-  const {goBack} = useNavigationStore();
+  const {goBack} = useNavigationState();
   const {getVideo} = useVideoPlayer();
-  const {setPlaylist} = usePlaylist();
-  const {show, hide} = useAppStore();
+  const {albums, renderPage, loading, onFetch, onEndReached} = useAlbum();
   const params = route.params;
-
-  const [loading, setLoading] = useState(true);
-  const [albums, setAlbums] = useState(undefined);
-  const [pages, setPages] = useState(undefined);
-  const [renderPage, setRenderPage] = useState(undefined);
 
   const sizeText = useMemo(() => {
     let size = params.title.length * 10;
@@ -48,46 +30,11 @@ const Albums = ({navigation, route}) => {
     return Array.from({length: 15}).map(_ => null);
   }, []);
 
-  const mutationGetAlbums = useMutation({
-    mutationFn: value => {
-      return API.getAlbums({
-        videoId: value.videoId,
-        playlistId: value.playlistId,
-      });
-    },
-    onSuccess: res => {
-      setAlbums(res);
-      setPages(generatePage(res, 25));
-      setRenderPage(head(generatePage(res, 25)));
-    },
-    onError: err => {
-      console.log('error', err);
-    },
-  });
-
-  const mutationGetStream = useMutation({
-    mutationFn: videoId => {
-      show();
-      return API.getStream(videoId);
-    },
-    onSuccess: res => {
-      hide();
-      var video = res;
-      video.isAlbum = true;
-      setVideo(res);
-    },
-    onError: err => {
-      hide();
-      console.log('error', err);
-    },
-  });
-
   useEffect(() => {
     if (params.playlistId && params.videoId) {
-      mutationGetAlbums.mutate({
-        videoId: params.videoId,
-        playlistId: params.playlistId,
-      });
+      (async () => {
+        await onFetch({videoId: params.videoId, playlistId: params.playlistId});
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.playlistId, params.videoId]);
@@ -120,23 +67,14 @@ const Albums = ({navigation, route}) => {
         keyExtractor={(item, index) => item?.videoId || index.toString()}
         data={renderPage || dataPlaceholderList}
         estimatedItemSize={30}
-        onEndReached={() => {
-          if (albums && albums.length > renderPage.length) {
-            setLoading(true);
-            let nextPage = pages[renderPage.length / 25];
-            setRenderPage(renderPage.concat(nextPage));
-          } else {
-            setLoading(false);
-          }
-        }}
+        onEndReached={onEndReached}
         onEndReachedThreshold={0.1}
         renderItem={({item, index}) => (
           <ListRenderer
             isAlbum
             item={item}
             onPress={async value => {
-              setPlaylist({playlist: albums, isAlbum: true});
-              await getVideo(value.videoId);
+              await getVideo(value.videoId, albums);
             }}
           />
         )}

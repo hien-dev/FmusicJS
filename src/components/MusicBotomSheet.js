@@ -12,12 +12,11 @@ import {MaterialIcons} from 'components/VectorIcons';
 import VideoPlayer from 'components/VideoPlayer';
 import MusicListBottomSheet from 'components/MusicListBottomSheet';
 import Text from 'components/Text';
-import {useVideoState} from 'hooks/useVideoPlayer';
-import {useAppStore} from 'stores/appStore';
-import {useTheme} from 'themes/index';
-import appStyles from 'themes/appStyles';
-import {Constants} from 'utils/constants';
+import useTheme from 'hooks/useTheme';
 import useSafeArea from 'hooks/useSafeAreaInsets';
+import {useVideoState} from 'hooks/useVideoPlayer';
+import appStyles from 'utils/appStyles';
+import {Constants} from 'utils/constants';
 
 if (Constants.android && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -158,8 +157,7 @@ const MusicBotomSheet = () => {
   return (
     <BottomSheet
       ref={sheetRef}
-      // topInset={insets?.top ?? 0}
-      topInset={0}
+      topInset={Constants.android ? 0 : insets?.top ?? 0}
       bottomInset={bottomInset}
       snapPoints={[70, '100%']}
       enableHandlePanningGesture={false}

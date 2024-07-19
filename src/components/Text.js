@@ -1,7 +1,7 @@
 import React from 'react';
 import {Animated} from 'react-native';
-import {FontFamily} from 'themes/fonts';
-import {useTheme} from 'themes/index';
+import {FontFamily} from 'utils/fonts';
+import useTheme from 'hooks/useTheme';
 
 /**
  *

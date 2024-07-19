@@ -1,7 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
-import appStyles from 'themes/appStyles';
-import {useTheme} from 'themes/index';
+import appStyles from 'utils/appStyles';
+import useTheme from 'hooks/useTheme';
 import {MaterialIcons, AntDesign} from 'components/VectorIcons';
 
 const VideoAction = ({

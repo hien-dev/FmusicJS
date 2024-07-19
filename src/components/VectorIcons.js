@@ -2,7 +2,7 @@ import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon2 from 'react-native-vector-icons/AntDesign';
-import {useTheme} from 'themes/index';
+import useTheme from 'hooks/useTheme';
 
 export const MaterialIcons = ({name, size = 50, color, onPress, styles}) => {
   const theme = useTheme();

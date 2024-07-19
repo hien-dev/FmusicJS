@@ -2,9 +2,9 @@ import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {last} from 'lodash';
 import FastImage from 'react-native-fast-image';
-import appStyles from 'themes/appStyles';
+import appStyles from 'utils/appStyles';
 import Assets from 'assets/images';
-import {useTheme} from 'themes/index';
+import useTheme from 'hooks/useTheme';
 import Text from 'components/Text';
 import {Constants} from 'utils/constants';
 

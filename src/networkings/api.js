@@ -20,6 +20,8 @@ const RequestBody = {
 };
 
 const Main = 'https://www.youtube.com/';
+const AppScript =
+  'https://script.google.com/macros/s/AKfycbwBxcXbSVTPGpKOhcoWlTSOHU__erZOUG-8mDAkXDA3gWORA_GwMn_0m0u8xwMLOB2PbQ/exec';
 const Endpoint = 'youtubei/v1/';
 const Key = '&key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
 const PrettyPrint = '?prettyPrint=false';
@@ -60,7 +62,7 @@ export const getAlbums = async ({videoId, playlistId}) => {
   const params = {videoId: videoId, playlistId: playlistId};
   let body = Object.assign(params, RequestBody);
 
-  let headers = useNetworking.getState().requestHeader;
+  let headers = useNetworking.getState().requestHeader ?? {};
   let response = await axios.post(URL.Next, body, {
     headers: JSON.parse(JSON.stringify(headers)),
   });
@@ -70,4 +72,8 @@ export const getAlbums = async ({videoId, playlistId}) => {
 export const getVideoInfo = async videoId => {
   let url = `${Main}watch?v=${videoId}`;
   return await ytdl.getInfo(url);
+};
+
+export const getAppScript = async () => {
+  return await axios.get(AppScript);
 };

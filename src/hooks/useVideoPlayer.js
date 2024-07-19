@@ -8,6 +8,7 @@ export const useVideoState = create(set => ({
   source: undefined,
   title: undefined,
   poster: undefined,
+  albums: undefined,
   author: '',
   relatedVideos: [],
   paused: true,
@@ -25,6 +26,7 @@ export const useVideoState = create(set => ({
           poster: video.poster,
           author: video.author,
           paused: true,
+          albums: video.albums,
         });
       }, 300);
     }
@@ -50,11 +52,14 @@ const useVideoPlayer = ref => {
     }
   };
 
-  const getVideo = async videoId => {
+  const getVideo = async (videoId, albums = undefined) => {
     setLoading(true);
     try {
       let video = await getVideoInfo(videoId);
-      setVideo(parseVideo(video));
+      let data = albums
+        ? Object.assign({albums: albums}, parseVideo(video))
+        : parseVideo(video);
+      setVideo(data);
       setLoading(false);
     } catch (error) {
       console.log(`[error] videoinfo: ${JSON.stringify(error)}`);

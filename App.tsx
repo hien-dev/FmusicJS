@@ -7,18 +7,20 @@
 
 import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import SplashScreen from 'react-native-splash-screen';
-import appStyles from 'themes/appStyles';
-import AppNavigator from 'navigation/appNavigator';
+import appStyles from 'utils/appStyles';
+import AppNavigator from 'src/navigation/appNavigator';
 import {initRequestHeader} from 'networkings/api';
 import MusicBotomSheet from 'components/MusicBotomSheet';
 import LoadingView from 'components/LoadingView';
 import RealmContext from 'realms/realm';
 import useNetworking from 'hooks/useNetworking';
+import {StatusBar, useColorScheme} from 'react-native';
+import useTheme from 'hooks/useTheme';
 
-const queryClient = new QueryClient();
 const App = () => {
+  const colorScheme = useColorScheme();
+  const theme = useTheme();
   const {loading} = useNetworking();
   const [onboarding, setOnboarding] = React.useState(true);
 
@@ -36,13 +38,15 @@ const App = () => {
   }
   return (
     <GestureHandlerRootView style={appStyles.flex}>
-      <QueryClientProvider client={queryClient}>
-        <RealmContext.RealmProvider>
-          <AppNavigator />
-          <MusicBotomSheet />
-          {loading && <LoadingView />}
-        </RealmContext.RealmProvider>
-      </QueryClientProvider>
+      <RealmContext.RealmProvider>
+        <StatusBar
+          backgroundColor={theme.colors.background}
+          barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
+        />
+        <AppNavigator />
+        <MusicBotomSheet />
+        {loading && <LoadingView />}
+      </RealmContext.RealmProvider>
     </GestureHandlerRootView>
   );
 };

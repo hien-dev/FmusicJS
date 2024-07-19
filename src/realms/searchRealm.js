@@ -5,7 +5,7 @@ export default class SearchRealm extends Realm.Object {
     name: 'SearchRealm',
     properties: {
       text: 'string',
-      createDate: 'date',
+      createDate: {type: 'date', default: new Date()},
     },
     primaryKey: 'text',
   };

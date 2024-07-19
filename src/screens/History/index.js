@@ -1,9 +1,9 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {isEmpty} from 'lodash';
-import appStyles from 'themes/appStyles';
+import appStyles from 'utils/appStyles';
 import Text from 'components/Text';
-import {useTheme} from 'themes/index';
+import useTheme from 'hooks/useTheme';
 import Header from 'components/Header';
 import useVideoRealm from 'hooks/useVideoRealm';
 import useSafeArea from 'hooks/useSafeAreaInsets';

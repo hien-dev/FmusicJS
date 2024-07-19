@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {FlatList} from 'react-native-gesture-handler';
@@ -6,18 +6,24 @@ import ListRenderer from 'components/ListRenderer';
 import LoadingView from 'components/LoadingView';
 import Text from 'components/Text';
 import {MaterialIcons} from 'components/VectorIcons';
-import {usePlaylist} from 'stores/playListStore';
 import RelatedVideo from 'components/RelatedVideo';
-
-import {useAppStore} from 'stores/appStore';
-import appStyles from 'themes/appStyles';
-import {useTheme} from 'themes/index';
-import useVideoPlayer from 'hooks/useVideoPlayer';
+import appStyles from 'utils/appStyles';
+import useTheme from 'hooks/useTheme';
+import useVideoPlayer, {useVideoState} from 'hooks/useVideoPlayer';
 
 const MusicListBottomSheet = React.forwardRef(({}, ref) => {
   const theme = useTheme();
   const {getVideo} = useVideoPlayer();
-  const {playlist, isAlbum} = usePlaylist();
+  const {relatedVideos, albums} = useVideoState();
+
+  const playlist = useMemo(() => {
+    return albums || relatedVideos;
+  }, [relatedVideos, albums]);
+
+  const isAlbum = useMemo(() => {
+    return albums !== undefined;
+  }, [albums]);
+
   const [showPlaylist, setShowPlaylist] = useState(false);
 
   const emptyView = () => (
@@ -86,7 +92,8 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
                     isAlbum={isAlbum}
                     item={item}
                     onPress={async value => {
-                      await getVideo(value.videoId);
+                      await getVideo(value.videoId, albums);
+                      onClose();
                     }}
                   />
                 );
@@ -97,6 +104,7 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
                   item={item}
                   onPress={async value => {
                     await getVideo(value);
+                    onClose();
                   }}
                 />
               );

@@ -2,8 +2,8 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import Text from 'components/Text';
 import {Slider} from '@miblanchard/react-native-slider';
-import appStyles from 'themes/appStyles';
-import {useTheme} from 'themes/index';
+import appStyles from 'utils/appStyles';
+import useTheme from 'hooks/useTheme';
 import {msToTime} from 'utils/timer';
 
 const SliderTime = ({progress, onSlidingComplete}) => {

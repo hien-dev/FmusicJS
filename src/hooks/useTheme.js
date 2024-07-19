@@ -5,7 +5,7 @@ import {DefaultTheme} from '@react-navigation/native';
  *
  * @returns {LightTheme}
  */
-export function useTheme() {
+export default function useTheme() {
   return useColorScheme() === 'dark' ? DarkTheme : LightTheme;
 }
 

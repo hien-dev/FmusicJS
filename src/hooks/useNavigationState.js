@@ -1,7 +1,7 @@
 import {navigationRef} from 'navigation/appNavigator';
 import {create} from 'zustand';
 
-export const useNavigationStore = create(set => ({
+const useNavigationState = create(set => ({
   current: undefined,
   navigate: (screen, params) => {
     navigationRef.navigate(screen, params);
@@ -12,3 +12,5 @@ export const useNavigationStore = create(set => ({
     set({current: undefined});
   },
 }));
+
+export default useNavigationState;

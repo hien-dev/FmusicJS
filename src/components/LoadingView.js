@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import LottieView from 'lottie-react-native';
 import Assets from 'assets/images';
-import {useTheme} from 'themes/index';
+import useTheme from 'hooks/useTheme';
 
 const LoadingView = () => {
   const theme = useTheme();

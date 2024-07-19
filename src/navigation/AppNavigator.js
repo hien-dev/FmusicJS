@@ -12,7 +12,7 @@ import History from 'screens/History';
 import Search from 'screens/Search';
 import ImageIcons from 'components/ImageIcons';
 import Assets from 'assets/images';
-import {useTheme} from 'themes/index';
+import useTheme from 'hooks/useTheme';
 import {SCREEN_NAME} from 'utils/constants';
 
 const HomeScreen = () => {

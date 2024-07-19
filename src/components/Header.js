@@ -1,8 +1,8 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import Text from 'components/Text';
-import appStyles from 'themes/appStyles';
 import {MaterialIcons} from 'components/VectorIcons';
+import appStyles from 'utils/appStyles';
 
 const Header = ({title, iconName, onPress}) => {
   return (

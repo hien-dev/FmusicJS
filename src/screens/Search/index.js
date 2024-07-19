@@ -1,56 +1,32 @@
 import React, {useRef, useState} from 'react';
-import {ActivityIndicator, StyleSheet, TextInput, View} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {isEmpty} from 'lodash';
 import ListRenderer from 'components/ListRenderer';
-import {getSearchResults} from 'networkings/api';
-import {useNavigationStore} from 'stores/navigationStore';
+import useNavigationState from 'hooks/useNavigationState';
 import useVideoPlayer from 'hooks/useVideoPlayer';
-import appStyles from 'themes/appStyles';
-import {useTheme} from 'themes/index';
+import appStyles from 'utils/appStyles';
+import useTheme from 'hooks/useTheme';
 import {Constants, SCREEN_NAME} from 'utils/constants';
 import {MaterialIcons} from 'components/VectorIcons';
 import useSafeArea from 'hooks/useSafeAreaInsets';
-import useNetworking from 'hooks/useNetworking';
-
-const useSearch = () => {
-  const [videos, setVideos] = useState([]);
-  const {setLoading} = useNetworking();
-  const [continuation, setContinuation] = useState(undefined);
-
-  const onFetch = async query => {
-    setLoading(true);
-    try {
-      let res = await getSearchResults({query});
-      setVideos(res.data);
-      setContinuation(res?.continuation);
-      setLoading(false);
-    } catch (error) {
-      console.log(`[error] onFetch: ${JSON.stringify(error)}`);
-      setLoading(false);
-    }
-  };
-
-  const onNext = async () => {
-    try {
-      let res = await getSearchResults({query: '', continuation: continuation});
-      setVideos(videos.concat(res?.data ?? []));
-      setContinuation(res?.continuation);
-    } catch (error) {
-      console.log(`[error] onNext: ${JSON.stringify(error)}`);
-    }
-  };
-
-  return {videos, onFetch, onNext};
-};
+import useSearch from 'hooks/useSearch';
+import Text from 'components/Text';
+import ListSearchText from 'components/ListSearchText';
 
 const Search = () => {
   const ref = useRef(null);
   const theme = useTheme();
-  const {videos, onFetch, onNext} = useSearch();
+  const {videos, listSearch, onFetch, onNext} = useSearch();
   const {paddingTop} = useSafeArea();
   const {getVideo} = useVideoPlayer();
-  const {goBack, navigate} = useNavigationStore();
+  const {goBack, navigate} = useNavigationState();
   const [searchText, setSearchText] = useState('');
 
   return (
@@ -82,7 +58,7 @@ const Search = () => {
           />
         </View>
       </View>
-      {!isEmpty(videos) && (
+      {!isEmpty(videos) ? (
         <FlatList
           ref={ref}
           showsVerticalScrollIndicator={false}
@@ -115,6 +91,18 @@ const Search = () => {
             </View>
           }
         />
+      ) : (
+        <FlatList
+          data={listSearch}
+          renderItem={({item, index}) => (
+            <ListSearchText
+              item={item}
+              onPress={async () => {
+                await onFetch(item.text);
+              }}
+            />
+          )}
+        />
       )}
     </View>
   );
@@ -135,7 +123,7 @@ const styles = StyleSheet.create({
   },
   inputView: {
     width: Constants.window.width - 28 - 30,
-    height: 35,
+    height: 40,
   },
   radius: {
     borderRadius: 40,

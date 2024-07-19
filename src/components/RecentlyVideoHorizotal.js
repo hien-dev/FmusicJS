@@ -2,9 +2,9 @@ import React, {useCallback} from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import Text from 'components/Text';
-import appStyles from 'themes/appStyles';
+import appStyles from 'utils/appStyles';
 import Assets from 'assets/images';
-import {useTheme} from 'themes/index';
+import useTheme from 'hooks/useTheme';
 
 const RecentlyVideoHorizotal = props => {
   const {all, mini, onPress} = props;

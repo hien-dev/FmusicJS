@@ -1,18 +1,27 @@
 import React, {useCallback, useState} from 'react';
+import {isEmpty, head} from 'lodash';
 import Video from 'react-native-video';
 import {StyleSheet, View} from 'react-native';
 import SliderTime from 'components/VideoPlayer/sliderTime';
 import VideoAction from 'components/VideoPlayer/videoAction';
 import useVideoRealm from 'hooks/useVideoRealm';
 import useVideoPlayer, {useVideoState} from 'hooks/useVideoPlayer';
-import {useTheme} from 'themes/index';
+import useTheme from 'hooks/useTheme';
 import {Constants} from 'utils/constants';
 
 const VideoPlayer = React.forwardRef(({}, videoRef) => {
   const theme = useTheme();
-  const {source, poster, paused, setPaused, repeat, setRepeat} =
-    useVideoState();
-  const {onPause, onResume} = useVideoPlayer(videoRef);
+  const {
+    source,
+    poster,
+    paused,
+    albums,
+    relatedVideos,
+    setPaused,
+    repeat,
+    setRepeat,
+  } = useVideoState();
+  const {getVideo, onPause, onResume} = useVideoPlayer(videoRef);
   const {isFavourite, updateFavourite, saveVideoRealm} = useVideoRealm();
   const [showNotiControls, setShowNotiControls] = useState(false);
   const [progress, setOnProgress] = useState({
@@ -71,7 +80,7 @@ const VideoPlayer = React.forwardRef(({}, videoRef) => {
           ignoreSilentSwitch={'ignore'}
           playWhenInactive={true}
           playInBackground={false}
-          showNotificationControls={showNotiControls}
+          showNotificationControls={true}
           style={styles.video}
           onLoadStart={e => {
             setOnProgress({
@@ -91,8 +100,11 @@ const VideoPlayer = React.forwardRef(({}, videoRef) => {
               onResume();
             }
           }}
-          onEnd={() => {
-            !repeat && onPause();
+          onEnd={async () => {
+            if (!repeat) {
+              let videoId = !isEmpty(relatedVideos) && head(relatedVideos).id;
+              await getVideo(videoId);
+            }
           }}
           onError={e => {
             console.log(`error: ${JSON.stringify(source)}`);
@@ -101,6 +113,7 @@ const VideoPlayer = React.forwardRef(({}, videoRef) => {
       );
     }
     return <></>;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source, poster]);
 
   return (
