@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {parseSearch} from 'networkings/responses/SearchResponse';
 import appStyles from 'utils/appStyles';
@@ -9,6 +9,7 @@ import Text from 'components/Text';
 import {Constants} from 'utils/constants';
 import {parseAlbum} from 'networkings/responses/AlbumsResponse';
 import {MaterialIcons} from './VectorIcons';
+import Image from './Image';
 
 const ListRenderer = memo(props => {
   const {item, onPress, isAlbum = false} = props;
@@ -31,12 +32,7 @@ const ListRenderer = memo(props => {
           onPress(data);
         }}>
         <View>
-          <Image
-            source={{uri: data?.thumbnail}}
-            defaultSource={Assets.placeHolderImage}
-            style={styles.img}
-            resizeMode={'stretch'}
-          />
+          <Image uri={data?.thumbnail} style={styles.img} />
           {data?.playlistId && (
             <MaterialIcons
               name={'playlist-play'}

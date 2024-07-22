@@ -6,16 +6,16 @@
  */
 
 import React, {useEffect} from 'react';
+import {StatusBar, useColorScheme} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
 import appStyles from 'utils/appStyles';
-import AppNavigator from 'src/navigation/appNavigator';
-import {initRequestHeader} from 'networkings/api';
+import AppNavigator from 'navigation/appNavigator';
+import {getAppScript, initRequestHeader} from 'networkings/api';
 import MusicBotomSheet from 'components/MusicBotomSheet';
 import LoadingView from 'components/LoadingView';
 import RealmContext from 'realms/realm';
 import useNetworking from 'hooks/useNetworking';
-import {StatusBar, useColorScheme} from 'react-native';
 import useTheme from 'hooks/useTheme';
 
 const App = () => {
@@ -30,6 +30,7 @@ const App = () => {
       let hide = await initRequestHeader();
       if (hide) {
         setOnboarding(false);
+        await getAppScript();
       }
     })();
   });

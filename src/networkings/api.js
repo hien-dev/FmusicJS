@@ -6,6 +6,7 @@ import {
 } from 'networkings/responses/SearchResponse';
 import {parseAlbumsResponse} from 'networkings/responses/AlbumsResponse';
 import useNetworking from 'hooks/useNetworking';
+import useAppScript from 'hooks/useAppScript';
 
 const RequestBody = {
   context: {
@@ -21,7 +22,7 @@ const RequestBody = {
 
 const Main = 'https://www.youtube.com/';
 const AppScript =
-  'https://script.google.com/macros/s/AKfycbwBxcXbSVTPGpKOhcoWlTSOHU__erZOUG-8mDAkXDA3gWORA_GwMn_0m0u8xwMLOB2PbQ/exec';
+  'https://script.google.com/macros/s/AKfycbzpZrfOnNbpFuWbicMTgWQ_vkQeqqifmtzhCjWxPyIvea3qPxYJFSDJdTl9LoVoBADklQ/exec';
 const Endpoint = 'youtubei/v1/';
 const Key = '&key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
 const PrettyPrint = '?prettyPrint=false';
@@ -75,5 +76,9 @@ export const getVideoInfo = async videoId => {
 };
 
 export const getAppScript = async () => {
-  return await axios.get(AppScript);
+  const setAppScript = useAppScript.getState().setAppScript;
+  let response = await axios.get(AppScript);
+  if (response.data) {
+    setAppScript(response.data);
+  }
 };

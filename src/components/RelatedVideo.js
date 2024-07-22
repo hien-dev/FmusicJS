@@ -1,12 +1,11 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {last} from 'lodash';
-import FastImage from 'react-native-fast-image';
 import appStyles from 'utils/appStyles';
-import Assets from 'assets/images';
 import useTheme from 'hooks/useTheme';
 import Text from 'components/Text';
 import {Constants} from 'utils/constants';
+import Image from './Image';
 
 const RelatedVideo = ({item, onPress}) => {
   const theme = useTheme();
@@ -17,12 +16,7 @@ const RelatedVideo = ({item, onPress}) => {
       onPress={() => {
         onPress(item.id);
       }}>
-      <FastImage
-        source={{uri: last(item?.thumbnails)?.url}}
-        defaultSource={Assets.placeHolderImage}
-        style={styles.img}
-        resizeMode={'stretch'}
-      />
+      <Image uri={last(item?.thumbnails)?.url} style={styles.img} />
       <View style={[styles.textView]}>
         <Text medium fontSize={appStyles.xs}>
           {item?.title}

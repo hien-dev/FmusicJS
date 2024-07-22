@@ -8,7 +8,7 @@
       "assets/*": ["src/assets/*"],
       "components/*": ["src/components/*"],
       "hooks/*": ["src/hooks/*"],
-      "navigation/*": ["src/networkings/navigation/*"],
+      "navigation/*": ["src/navigation/*"],
       "networkings/*": ["src/networkings/*"],
       "realms/*": ["src/realms/*"],
       "screens/*": ["src/screens/*"],

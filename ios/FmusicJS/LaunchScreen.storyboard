@@ -17,20 +17,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="jEa-Iw-zWp">
-                                <rect key="frame" x="20" y="120" width="335" height="250"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="pVG-BY-wuU">
+                                <rect key="frame" x="87.5" y="100" width="200" height="120"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="250" id="hGC-Vc-x7N"/>
+                                    <constraint firstAttribute="width" secondItem="pVG-BY-wuU" secondAttribute="height" multiplier="1:0.6" id="6Gq-HB-OiS"/>
+                                    <constraint firstAttribute="width" constant="200" id="gWa-nf-eA9"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="jEa-Iw-zWp" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" constant="20" id="F2h-Jd-e5X"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" secondItem="jEa-Iw-zWp" secondAttribute="trailing" constant="20" id="UBW-ZB-EPz"/>
-                            <constraint firstItem="jEa-Iw-zWp" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="top" constant="100" id="bcX-0i-pjN"/>
-                            <constraint firstItem="jEa-Iw-zWp" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="tLg-kR-ATp"/>
+                            <constraint firstItem="pVG-BY-wuU" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Ir7-TD-h39"/>
+                            <constraint firstItem="pVG-BY-wuU" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="top" constant="80" id="PaK-Te-HaY"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -40,7 +39,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo" width="341.33334350585938" height="341.33334350585938"/>
+        <image name="logo" width="185" height="149.66667175292969"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

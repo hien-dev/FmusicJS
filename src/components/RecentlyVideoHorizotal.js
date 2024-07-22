@@ -1,10 +1,10 @@
 import React, {useCallback} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import Text from 'components/Text';
 import appStyles from 'utils/appStyles';
-import Assets from 'assets/images';
 import useTheme from 'hooks/useTheme';
+import Image from './Image';
 
 const RecentlyVideoHorizotal = props => {
   const {all, mini, onPress} = props;
@@ -12,14 +12,11 @@ const RecentlyVideoHorizotal = props => {
 
   const itemView = useCallback(({item}) => {
     return (
-      <TouchableOpacity onPress={() => onPress(item)} style={styles.container}>
-        <Image
-          key={item?.videoId}
-          source={{uri: item?.poster?.url}}
-          defaultSource={Assets.placeHolderImage}
-          style={styles.img}
-          resizeMode={'stretch'}
-        />
+      <TouchableOpacity
+        key={item?.videoId}
+        onPress={() => onPress(item)}
+        style={styles.container}>
+        <Image uri={item?.poster?.url} style={styles.img} />
         <Text
           fontSize={[appStyles.xxs, appStyles.mTXxs]}
           medium
@@ -28,6 +25,7 @@ const RecentlyVideoHorizotal = props => {
         </Text>
       </TouchableOpacity>
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

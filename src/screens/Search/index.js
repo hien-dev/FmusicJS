@@ -99,6 +99,9 @@ const Search = () => {
               item={item}
               onPress={async () => {
                 await onFetch(item.text);
+                if (ref) {
+                  ref.current.scrollToOffset({offset: 0});
+                }
               }}
             />
           )}
@@ -117,7 +120,6 @@ const styles = StyleSheet.create({
     ...appStyles.row,
     ...appStyles.spaceBetween,
     ...appStyles.hCenter,
-    ...appStyles.mBSm,
     height: 60,
     borderBottomWidth: 1,
   },
