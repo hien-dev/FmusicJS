@@ -1,4 +1,4 @@
-import {Constants} from 'utils/constants';
+import Constants from 'utils/constants';
 import {create} from 'zustand';
 
 const useSafeArea = create(set => ({

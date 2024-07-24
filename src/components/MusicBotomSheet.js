@@ -16,7 +16,7 @@ import useTheme from 'hooks/useTheme';
 import useSafeArea from 'hooks/useSafeAreaInsets';
 import {useVideoState} from 'hooks/useVideoPlayer';
 import appStyles from 'utils/appStyles';
-import {Constants} from 'utils/constants';
+import Constants from 'utils/constants';
 
 if (Constants.android && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);

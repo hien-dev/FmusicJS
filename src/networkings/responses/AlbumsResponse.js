@@ -1,11 +1,13 @@
 import {get, last, head} from 'lodash';
 
 export const parseAlbumsResponse = response => {
-  return get(
+  let contents = get(
     response,
     'data.contents.twoColumnWatchNextResults.playlist.playlist.contents',
     [],
   );
+  let data = contents.map(item => parseAlbum(item));
+  return data;
 };
 
 export const parseAlbum = item => {

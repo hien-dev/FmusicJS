@@ -4,6 +4,8 @@ const android = Platform.OS === 'android';
 const iOS = Platform.OS === 'ios';
 const window = Dimensions.get('window');
 
+const placeholderList = Array.from({length: 15}).map(_ => undefined);
+
 export const SCREEN_NAME = {
   HOME_NAVIGATOR: 'HOME_NAVIGATOR',
   HOME: 'HOME',
@@ -13,8 +15,11 @@ export const SCREEN_NAME = {
   SEARCH: 'SEARCH',
 };
 
-export const Constants = {
+const Constants = {
   android,
   iOS,
   window,
+  placeholderList,
 };
+
+export default Constants;

@@ -1,15 +1,13 @@
 import React, {useMemo, useState} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import {FlatList} from 'react-native-gesture-handler';
-import ListRenderer from 'components/ListRenderer';
-import LoadingView from 'components/LoadingView';
 import Text from 'components/Text';
+import LoadingView from 'components/LoadingView';
+import VerticalList from 'components/VerticalList';
 import {MaterialIcons} from 'components/VectorIcons';
-import RelatedVideo from 'components/RelatedVideo';
-import appStyles from 'utils/appStyles';
 import useTheme from 'hooks/useTheme';
 import useVideoPlayer, {useVideoState} from 'hooks/useVideoPlayer';
+import appStyles from 'utils/appStyles';
 
 const MusicListBottomSheet = React.forwardRef(({}, ref) => {
   const theme = useTheme();
@@ -19,10 +17,6 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
   const playlist = useMemo(() => {
     return albums || relatedVideos;
   }, [relatedVideos, albums]);
-
-  const isAlbum = useMemo(() => {
-    return albums !== undefined;
-  }, [albums]);
 
   const [showPlaylist, setShowPlaylist] = useState(false);
 
@@ -77,39 +71,13 @@ const MusicListBottomSheet = React.forwardRef(({}, ref) => {
         ]}>
         {handleComponent()}
         {showPlaylist ? (
-          <FlatList
-            contentContainerStyle={appStyles.pHXs}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item, index) =>
-              item?.id || item?.videoId || index.toString()
-            }
-            data={playlist ?? []}
-            renderItem={({item, index}) => {
-              if (isAlbum) {
-                return (
-                  <ListRenderer
-                    key={item.videoId}
-                    isAlbum={isAlbum}
-                    item={item}
-                    onPress={async value => {
-                      await getVideo(value.videoId, albums);
-                      onClose();
-                    }}
-                  />
-                );
-              }
-              return (
-                <RelatedVideo
-                  key={item.id}
-                  item={item}
-                  onPress={async value => {
-                    await getVideo(value);
-                    onClose();
-                  }}
-                />
-              );
+          <VerticalList
+            data={playlist}
+            onPress={async value => {
+              await getVideo(value.videoId, albums);
+              onClose();
             }}
-            ListFooterComponent={<View style={styles.listFooter} />}
+            contentContainerStyle={appStyles.pHXs}
           />
         ) : (
           <LoadingView />
@@ -129,10 +97,6 @@ const styles = StyleSheet.create({
     ...appStyles.row,
     ...appStyles.spaceBetween,
     ...appStyles.hCenter,
-  },
-  listFooter: {
-    ...appStyles.fullWidth,
-    height: 80,
   },
   size24: {
     width: 24,

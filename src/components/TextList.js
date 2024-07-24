@@ -1,14 +1,16 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {MaterialIcons} from 'components/VectorIcons';
-import appStyles from 'utils/appStyles';
+import {FlatList} from 'react-native-gesture-handler';
 import Text from 'components/Text';
+import {MaterialIcons} from 'components/VectorIcons';
 import useTheme from 'hooks/useTheme';
+import appStyles from 'utils/appStyles';
 
-const ListSearchText = ({item, onPress}) => {
+const TextList = ({data, onPress}) => {
   const theme = useTheme();
-  return (
-    <TouchableOpacity key={item} onPress={onPress}>
+
+  const _renderItem = ({item}) => (
+    <TouchableOpacity key={item} onPress={() => onPress(item.text)}>
       <View
         style={[
           styles.h40,
@@ -31,6 +33,8 @@ const ListSearchText = ({item, onPress}) => {
       <View style={[styles.line, {backgroundColor: theme.colors.text}]} />
     </TouchableOpacity>
   );
+
+  return <FlatList data={data} renderItem={_renderItem} />;
 };
 
 const styles = StyleSheet.create({
@@ -45,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListSearchText;
+export default TextList;

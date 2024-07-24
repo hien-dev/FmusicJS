@@ -10,7 +10,7 @@ import {StatusBar, useColorScheme} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
 import appStyles from 'utils/appStyles';
-import AppNavigator from 'navigation/appNavigator';
+import AppNavigator from 'navigation/AppNavigator';
 import {getAppScript, initRequestHeader} from 'networkings/api';
 import MusicBotomSheet from 'components/MusicBotomSheet';
 import LoadingView from 'components/LoadingView';
@@ -27,10 +27,9 @@ const App = () => {
   useEffect(() => {
     SplashScreen.hide();
     (async () => {
-      let hide = await initRequestHeader();
+      let [hide, _] = await Promise.all([initRequestHeader(), getAppScript()]);
       if (hide) {
         setOnboarding(false);
-        await getAppScript();
       }
     })();
   });

@@ -11,12 +11,13 @@ export const parseSearchResponse = response => {
     'data.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[1].continuationItemRenderer.continuationEndpoint.continuationCommand.token',
     '',
   );
-  let data = itemSectionContents.filter(
+  let dataFilter = itemSectionContents.filter(
     e =>
       e.playlistRenderer !== undefined ||
       (e?.videoRenderer !== undefined &&
         e?.videoRenderer?.lengthText?.simpleText !== undefined),
   );
+  let data = dataFilter.map(item => parseSearch(item));
   return {data, continuation};
 };
 
@@ -31,12 +32,13 @@ export const parseSearchNextResponse = response => {
     'data.onResponseReceivedCommands[0].appendContinuationItemsAction.continuationItems[1].continuationItemRenderer.continuationEndpoint.continuationCommand.token',
     '',
   );
-  let data = itemSectionContents.filter(
+  let dataFilter = itemSectionContents.filter(
     e =>
       e.playlistRenderer !== undefined ||
       (e?.videoRenderer !== undefined &&
         e?.videoRenderer?.lengthText?.simpleText !== undefined),
   );
+  let data = dataFilter.map(item => parseSearch(item));
   return {data, continuation};
 };
 

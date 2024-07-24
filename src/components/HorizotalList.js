@@ -2,12 +2,12 @@ import React, {useCallback} from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import Text from 'components/Text';
+import Image from 'components/Image';
 import appStyles from 'utils/appStyles';
 import useTheme from 'hooks/useTheme';
-import Image from './Image';
 
-const RecentlyVideoHorizotal = props => {
-  const {all, mini, onPress} = props;
+const HorizotalList = props => {
+  const {data, onPress} = props;
   const theme = useTheme();
 
   const itemView = useCallback(({item}) => {
@@ -20,7 +20,7 @@ const RecentlyVideoHorizotal = props => {
         <Text
           fontSize={[appStyles.xxs, appStyles.mTXxs]}
           medium
-          numberOfLines={1}>
+          numberOfLines={2}>
           {item.title}
         </Text>
       </TouchableOpacity>
@@ -29,23 +29,14 @@ const RecentlyVideoHorizotal = props => {
   }, []);
 
   return (
-    <View style={styles.h120}>
-      <FlatList
-        data={mini}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => item?.videoId || index.toString()}
-        renderItem={({item, index}) => itemView({item})}
-        ListFooterComponent={<View style={styles.listFooter} />}
-      />
-      {all.length > 3 && (
-        <TouchableOpacity style={styles.seeAll}>
-          <Text fontSize={appStyles.xxs} color={theme.primaryColors.cyanBlue}>
-            See All
-          </Text>
-        </TouchableOpacity>
-      )}
-    </View>
+    <FlatList
+      data={data.slice(0, 5) ?? []}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      keyExtractor={(item, index) => item?.videoId || index.toString()}
+      renderItem={({item, index}) => itemView({item})}
+      ListFooterComponent={<View style={styles.listFooter} />}
+    />
   );
 };
 
@@ -53,8 +44,6 @@ const styles = StyleSheet.create({
   container: {
     ...appStyles.mRXs,
     width: 120,
-  },
-  h120: {
     height: 120,
   },
   img: {
@@ -65,11 +54,6 @@ const styles = StyleSheet.create({
     width: 7,
     height: 80,
   },
-  seeAll: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-  },
 });
 
-export default RecentlyVideoHorizotal;
+export default HorizotalList;

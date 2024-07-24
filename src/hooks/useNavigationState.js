@@ -1,4 +1,4 @@
-import {navigationRef} from 'navigation/appNavigator';
+import {navigationRef} from 'navigation/AppNavigator';
 import {create} from 'zustand';
 
 const useNavigationState = create(set => ({

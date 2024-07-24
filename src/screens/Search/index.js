@@ -1,24 +1,16 @@
 import React, {useRef, useState} from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {StyleSheet, TextInput, View} from 'react-native';
 import {isEmpty} from 'lodash';
-import ListRenderer from 'components/ListRenderer';
-import useNavigationState from 'hooks/useNavigationState';
-import useVideoPlayer from 'hooks/useVideoPlayer';
-import appStyles from 'utils/appStyles';
-import useTheme from 'hooks/useTheme';
-import {Constants, SCREEN_NAME} from 'utils/constants';
+import TextList from 'components/TextList';
+import VerticalList from 'components/VerticalList';
 import {MaterialIcons} from 'components/VectorIcons';
-import useSafeArea from 'hooks/useSafeAreaInsets';
+import useTheme from 'hooks/useTheme';
 import useSearch from 'hooks/useSearch';
-import Text from 'components/Text';
-import ListSearchText from 'components/ListSearchText';
+import useVideoPlayer from 'hooks/useVideoPlayer';
+import useSafeArea from 'hooks/useSafeAreaInsets';
+import useNavigationState from 'hooks/useNavigationState';
+import Constants, {SCREEN_NAME} from 'utils/constants';
+import appStyles from 'utils/appStyles';
 
 const Search = () => {
   const ref = useRef(null);
@@ -30,7 +22,7 @@ const Search = () => {
   const [searchText, setSearchText] = useState('');
 
   return (
-    <View style={[styles.container, paddingTop()]}>
+    <View style={[appStyles.flex, appStyles.pHSm, paddingTop()]}>
       <View style={[styles.topView, {borderColor: theme.colors.border}]}>
         <MaterialIcons
           name={'arrow-back-ios-new'}
@@ -59,52 +51,32 @@ const Search = () => {
         </View>
       </View>
       {!isEmpty(videos) ? (
-        <FlatList
+        <VerticalList
           ref={ref}
-          showsVerticalScrollIndicator={false}
           data={videos}
-          estimatedItemSize={30}
-          onEndReached={() => {
-            onNext();
+          loading={true}
+          onEndReached={onNext}
+          onPress={async value => {
+            if (value?.playlistId) {
+              navigate(SCREEN_NAME.ALBUMS, {
+                videoId: value?.videoId,
+                playlistId: value?.playlistId,
+                title: value?.title,
+              });
+              return;
+            }
+            await getVideo(value.videoId);
           }}
-          onEndReachedThreshold={0.1}
-          renderItem={({item, index}) => (
-            <ListRenderer
-              item={item}
-              index={index}
-              onPress={async value => {
-                if (value?.playlistId) {
-                  navigate(SCREEN_NAME.ALBUMS, {
-                    videoId: value?.videoId,
-                    playlistId: value?.playlistId,
-                    title: value?.title,
-                  });
-                  return;
-                }
-                await getVideo(value.videoId);
-              }}
-            />
-          )}
-          ListFooterComponent={
-            <View style={styles.listFooter}>
-              <ActivityIndicator size={'large'} color={theme.colors.icon} />
-            </View>
-          }
         />
       ) : (
-        <FlatList
+        <TextList
           data={listSearch}
-          renderItem={({item, index}) => (
-            <ListSearchText
-              item={item}
-              onPress={async () => {
-                await onFetch(item.text);
-                if (ref) {
-                  ref.current.scrollToOffset({offset: 0});
-                }
-              }}
-            />
-          )}
+          onPress={async text => {
+            await onFetch(text);
+            if (ref) {
+              ref.current.scrollToOffset({offset: 0});
+            }
+          }}
         />
       )}
     </View>
@@ -112,10 +84,6 @@ const Search = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    ...appStyles.flex,
-    ...appStyles.pHSm,
-  },
   topView: {
     ...appStyles.row,
     ...appStyles.spaceBetween,

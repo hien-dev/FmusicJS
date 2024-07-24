@@ -7,20 +7,12 @@ import VideoAction from 'components/VideoPlayer/videoAction';
 import useVideoRealm from 'hooks/useVideoRealm';
 import useVideoPlayer, {useVideoState} from 'hooks/useVideoPlayer';
 import useTheme from 'hooks/useTheme';
-import {Constants} from 'utils/constants';
+import Constants from 'utils/constants';
 
 const VideoPlayer = React.forwardRef(({}, videoRef) => {
   const theme = useTheme();
-  const {
-    source,
-    poster,
-    paused,
-    albums,
-    relatedVideos,
-    setPaused,
-    repeat,
-    setRepeat,
-  } = useVideoState();
+  const {source, poster, paused, relatedVideos, setPaused, repeat, setRepeat} =
+    useVideoState();
   const {getVideo, onPause, onResume} = useVideoPlayer(videoRef);
   const {isFavourite, updateFavourite, saveVideoRealm} = useVideoRealm();
   const [progress, setOnProgress] = useState({
@@ -78,7 +70,7 @@ const VideoPlayer = React.forwardRef(({}, videoRef) => {
           posterResizeMode={'cover'}
           ignoreSilentSwitch={'ignore'}
           playWhenInactive={true}
-          playInBackground={true}
+          playInBackground={Constants.android ? true : false}
           showNotificationControls={true}
           style={styles.video}
           onLoadStart={e => {

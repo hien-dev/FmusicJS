@@ -19,12 +19,24 @@ export const parseVideo = res => {
     },
   };
 
+  let relatedVideos = get(res, 'related_videos', []).map(item =>
+    parseRelatedVideos(item),
+  );
   return {
     videoId: detail?.videoId,
     source,
     title: detail?.title,
-    relatedVideos: get(res, 'related_videos', []),
+    relatedVideos: relatedVideos,
     poster,
     author: detail?.author?.name,
+  };
+};
+
+const parseRelatedVideos = item => {
+  return {
+    videoId: item.id,
+    title: item.title,
+    thumbnail: last(item?.thumbnails)?.url,
+    description: `${item?.author?.name} • ${item?.published}`,
   };
 };

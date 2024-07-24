@@ -1,19 +1,18 @@
 import React, {useEffect, useMemo} from 'react';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import appStyles from 'utils/appStyles';
-import useTheme from 'hooks/useTheme';
-import Text from 'components/Text';
+import {StyleSheet, View} from 'react-native';
 import {Marquee} from '@animatereactnative/marquee';
-import {Constants} from 'utils/constants';
-import ListRenderer from 'components/ListRenderer';
-import useVideoPlayer from 'hooks/useVideoPlayer';
+import Text from 'components/Text';
+import VerticalList from 'components/VerticalList';
 import {MaterialIcons} from 'components/VectorIcons';
-import useSafeArea from 'hooks/useSafeAreaInsets';
+import useTheme from 'hooks/useTheme';
 import useAlbum from 'hooks/useAlbum';
+import useVideoPlayer from 'hooks/useVideoPlayer';
+import useSafeArea from 'hooks/useSafeAreaInsets';
 import useNavigationState from 'hooks/useNavigationState';
+import appStyles from 'utils/appStyles';
+import Constants from 'utils/constants';
 
-const Albums = ({navigation, route}) => {
+const Albums = ({route}) => {
   const theme = useTheme();
   const {paddingTop} = useSafeArea();
   const {goBack} = useNavigationState();
@@ -26,10 +25,6 @@ const Albums = ({navigation, route}) => {
     return size > Constants.window.width - 60;
   }, [params.title]);
 
-  const dataPlaceholderList = useMemo(() => {
-    return Array.from({length: 15}).map(_ => null);
-  }, []);
-
   useEffect(() => {
     if (params.playlistId && params.videoId) {
       (async () => {
@@ -40,7 +35,7 @@ const Albums = ({navigation, route}) => {
   }, [params.playlistId, params.videoId]);
 
   return (
-    <View style={[styles.container, paddingTop()]}>
+    <View style={[appStyles.flex, appStyles.pHSm, paddingTop()]}>
       <View style={[styles.topView, {borderColor: theme.colors.border}]}>
         <View
           style={[styles.iconLeft, {backgroundColor: theme.colors.background}]}>
@@ -62,39 +57,19 @@ const Albums = ({navigation, route}) => {
           </Text>
         )}
       </View>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item, index) => item?.videoId || index.toString()}
-        data={renderPage || dataPlaceholderList}
-        estimatedItemSize={30}
+      <VerticalList
+        data={renderPage ?? Constants.placeholderList}
         onEndReached={onEndReached}
-        onEndReachedThreshold={0.1}
-        renderItem={({item, index}) => (
-          <ListRenderer
-            isAlbum
-            item={item}
-            onPress={async value => {
-              await getVideo(value.videoId, albums);
-            }}
-          />
-        )}
-        ListFooterComponent={
-          <View style={styles.listFooter}>
-            {loading && (
-              <ActivityIndicator size={'large'} color={theme.colors.icon} />
-            )}
-          </View>
-        }
+        loading={loading}
+        onPress={async value => {
+          await getVideo(value.videoId, albums);
+        }}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    ...appStyles.flex,
-    ...appStyles.pHSm,
-  },
   topView: {
     ...appStyles.vCenter,
     ...appStyles.hCenter,
@@ -109,11 +84,6 @@ const styles = StyleSheet.create({
     left: 0,
     justifyContent: 'center',
     zIndex: 1,
-  },
-  listFooter: {
-    ...appStyles.fullWidth,
-    ...appStyles.pTSm,
-    height: 120,
   },
 });
 

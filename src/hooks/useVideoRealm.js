@@ -15,17 +15,10 @@ const useVideoRealm = () => {
     },
   });
 
-  const recentlyPlayed5 = useMemo(() => {
-    return recentlyPlayed.slice(0, 5);
-  }, [recentlyPlayed]);
-
   const favouritePlayed = useMemo(() => {
     return recentlyPlayed.filter(i => i.favourite) || [];
   }, [recentlyPlayed]);
 
-  const favouritePlayed5 = useMemo(() => {
-    return (recentlyPlayed.filter(i => i.favourite) || []).slice(0, 5);
-  }, [recentlyPlayed]);
 
   const isFavourite = useCallback(() => {
     if (videoState && videoState.videoId && realm) {
@@ -76,9 +69,7 @@ const useVideoRealm = () => {
 
   return {
     recentlyPlayed,
-    recentlyPlayed5,
     favouritePlayed,
-    favouritePlayed5,
     isFavourite,
     updateFavourite,
     saveVideoRealm,
