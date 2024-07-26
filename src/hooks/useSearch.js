@@ -1,6 +1,8 @@
-import {useCallback, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState, useEffect} from 'react';
+import {Keyboard} from 'react-native';
+import {isEmpty} from 'lodash';
 import useNetworking from 'hooks/useNetworking';
-import {getSearchResults} from 'networkings/api';
+import {getSearchResults, getSuggestqueries} from 'networkings/api';
 import RealmContext from 'realms/realm';
 import SearchRealm from 'realms/searchRealm';
 
@@ -9,7 +11,31 @@ const useSearch = () => {
   const realm = useRealm();
   const [videos, setVideos] = useState([]);
   const {setLoading} = useNetworking();
+  const [searchText, setSearchText] = useState('');
   const [continuation, setContinuation] = useState(undefined);
+  const [suggestQueries, setSuggestQueries] = useState(undefined);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    // Cleanup the listeners on component unmount
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const searchRealm = useQuery({
     type: SearchRealm,
@@ -18,9 +44,32 @@ const useSearch = () => {
     },
   });
 
+  const onChangeText = useCallback(
+    async value => {
+      setSearchText(value);
+      await onSuggestqueries(value);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [searchText],
+  );
+
   const listSearch = useMemo(() => {
-    return searchRealm.slice(0, 20);
-  }, [searchRealm]);
+    return (isEmpty(searchText) ? searchRealm : suggestQueries).slice(0, 20);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestQueries, searchRealm]);
+
+  const onSuggestqueries = async query => {
+    if (isEmpty(query)) {
+      setSuggestQueries(undefined);
+      return;
+    }
+    try {
+      let res = await getSuggestqueries(query);
+      setSuggestQueries(res);
+    } catch (error) {
+      setSuggestQueries([]);
+    }
+  };
 
   const onFetch = async query => {
     setLoading(true);
@@ -62,7 +111,17 @@ const useSearch = () => {
     [realm],
   );
 
-  return {videos, listSearch, onFetch, onNext};
+  return {
+    videos,
+    listSearch,
+    keyboardVisible,
+    searchText,
+    setSearchText,
+    onFetch,
+    onNext,
+    onSuggestqueries,
+    onChangeText,
+  };
 };
 
 export default useSearch;

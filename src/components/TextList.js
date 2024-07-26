@@ -10,7 +10,7 @@ const TextList = ({data, onPress}) => {
   const theme = useTheme();
 
   const _renderItem = ({item}) => (
-    <TouchableOpacity key={item} onPress={() => onPress(item.text)}>
+    <TouchableOpacity key={item} onPress={() => onPress(item.text ?? item)}>
       <View
         style={[
           styles.h40,
@@ -20,15 +20,15 @@ const TextList = ({data, onPress}) => {
         ]}>
         <View style={[appStyles.row, appStyles.hCenter]}>
           <MaterialIcons
-            name={'history'}
+            name={item?.text ? 'history' : 'search'}
             size={25}
             color={theme.primaryColors.xMediumGrey}
           />
           <Text medium containerStyle={[appStyles.mLSm]}>
-            {item.text}
+            {item?.text ?? item}
           </Text>
         </View>
-        <MaterialIcons name={'close'} size={20} />
+        {item?.text && <MaterialIcons name={'close'} size={20} />}
       </View>
       <View style={[styles.line, {backgroundColor: theme.colors.text}]} />
     </TouchableOpacity>

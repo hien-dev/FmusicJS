@@ -19,7 +19,6 @@ const useVideoRealm = () => {
     return recentlyPlayed.filter(i => i.favourite) || [];
   }, [recentlyPlayed]);
 
-
   const isFavourite = useCallback(() => {
     if (videoState && videoState.videoId && realm) {
       let existVideo = realm.objectForPrimaryKey(

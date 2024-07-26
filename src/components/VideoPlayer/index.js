@@ -23,7 +23,10 @@ const VideoPlayer = React.forwardRef(({}, videoRef) => {
   const animationVideoContentStyle = useCallback(() => {
     if (poster) {
       return {
-        height: (Constants.window.width * poster.height) / poster.width,
+        height: Math.min(
+          220,
+          (Constants.window.width * poster.height) / poster.width,
+        ),
         borderColor: theme.colors.border,
       };
     }

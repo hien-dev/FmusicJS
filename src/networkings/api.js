@@ -1,10 +1,11 @@
 import axios from 'axios';
-import ytdl from '@ytdl-core';
+import ytdl from '@fmusic-lib';
 import {
   parseSearchNextResponse,
   parseSearchResponse,
 } from 'networkings/responses/SearchResponse';
 import {parseAlbumsResponse} from 'networkings/responses/AlbumsResponse';
+import {parseSuggestQueries} from 'networkings/responses/SuggestqueriesResponse';
 import useNetworking from 'hooks/useNetworking';
 import useAppScript from 'hooks/useAppScript';
 
@@ -26,11 +27,14 @@ const AppScript =
 const Endpoint = 'youtubei/v1/';
 const Key = '&key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8';
 const PrettyPrint = '?prettyPrint=false';
+const SuggestQueries =
+  'https://suggestqueries-clients6.youtube.com/complete/search?client=youtube&callback=google.sbox.p50&q=';
 
 const URL = {
   SwJSdata: Main + 'sw.js_data',
   Search: Main + Endpoint + 'search' + PrettyPrint + Key,
   Next: Main + Endpoint + 'next' + PrettyPrint + Key,
+  SuggestQueries,
 };
 
 export const initRequestHeader = async () => {
@@ -68,6 +72,15 @@ export const getAlbums = async ({videoId, playlistId}) => {
     headers: JSON.parse(JSON.stringify(headers)),
   });
   return parseAlbumsResponse(response);
+};
+
+export const getSuggestqueries = async text => {
+  let url = `${URL.SuggestQueries}${text}`;
+  let headers = useNetworking.getState().requestHeader ?? {};
+  let response = await axios.get(url, {
+    headers: JSON.parse(JSON.stringify(headers)),
+  });
+  return parseSuggestQueries(response.data);
 };
 
 export const getVideoInfo = async videoId => {

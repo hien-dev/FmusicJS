@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef} from 'react';
 import {StyleSheet, TextInput, View} from 'react-native';
 import {isEmpty} from 'lodash';
 import TextList from 'components/TextList';
@@ -15,11 +15,18 @@ import appStyles from 'utils/appStyles';
 const Search = () => {
   const ref = useRef(null);
   const theme = useTheme();
-  const {videos, listSearch, onFetch, onNext} = useSearch();
+  const {
+    videos,
+    listSearch,
+    keyboardVisible,
+    searchText,
+    onFetch,
+    onNext,
+    onChangeText,
+  } = useSearch();
   const {paddingTop} = useSafeArea();
   const {getVideo} = useVideoPlayer();
   const {goBack, navigate} = useNavigationState();
-  const [searchText, setSearchText] = useState('');
 
   return (
     <View style={[appStyles.flex, appStyles.pHSm, paddingTop()]}>
@@ -34,7 +41,7 @@ const Search = () => {
             value={searchText}
             placeholder="Search"
             placeholderTextColor={theme.primaryColors.gray76}
-            onChangeText={value => setSearchText(value)}
+            onChangeText={onChangeText}
             returnKeyType="search"
             onSubmitEditing={async () => {
               if (!isEmpty(searchText)) {
@@ -50,7 +57,7 @@ const Search = () => {
           />
         </View>
       </View>
-      {!isEmpty(videos) ? (
+      {!isEmpty(videos) && !keyboardVisible ? (
         <VerticalList
           ref={ref}
           data={videos}
